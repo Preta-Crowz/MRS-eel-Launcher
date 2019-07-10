@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MRS Launcher - Log</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+      eel.expose(debug)
+      eel.expose(info)
+      eel.expose(warn)
+      eel.expose(error)
+      eel.expose(fatal)
+      function debug(data){
+        console.debug(data)
+        document.write("[D]" + data + "<br />")
+      }
+      function info(data){
+        console.info(data)
+        document.write("[I]" + data + "<br />")
+      }
+      function warn(data){
+        console.warn(data)
+        document.write("[W]" + data + "<br />")
+      }
+      function error(data){
+        console.error(data)
+        document.write("[E]" + data + "<br />")
+      }
+      function fatal(data){
+        console.fatal(data)
+        document.write("[F]" + data + "<br />")
+      }
+    </script>
+  </head>
+  <body>
+
+  </body>
+</html>

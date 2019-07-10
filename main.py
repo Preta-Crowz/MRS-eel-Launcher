@@ -1,8 +1,8 @@
-import eel, json, os, pypresence, logging, time
+import json, os, pypresence, logging, time, threading, eel
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
-log = logging.Logger("MRS")
+logger = logging.Logger("MRS")
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
 
@@ -32,14 +32,42 @@ launcher = {
     'mpass':'https://account.mojang.com/password'
   }
 }
+
 eel.init('page')
+
+@eel.expose
+def debug(data):
+    eel.debug(data)
+    return logger.debug(data)
+@eel.expose
+def info(data):
+    eel.info(data)
+    return logger.info(data)
+@eel.expose
+def warn(data):
+    eel.warn(data)
+    return logger.warn(data)
+@eel.expose
+def error(data):
+    eel.error(data)
+    return logger.error(data)
+@eel.expose
+def fatal(data):
+    eel.fatal(data)
+    return logger.fatal(data)
+
+try:
+    mainThread = threading.Thread(target=eel.start,args=('wip.html','log.html'),kwargs={'size':(600,400)})
+    mainThread.start()
+except OSError: pass
+
+info('Start logging')
+
 try:
     auth_token = pycraft.authentication.AuthenticationToken()
     auth_token.authenticate(id,pw)
-    print(auth_token.client_token)
-    exit()
+    info('Logined to ' + id)
 except pex.YggdrasilError:
-    print("Failed to login!")
-exit()
-rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Nyaa',start=int(time.time()))
-eel.start('wip.html')
+    error("Failed to login!")
+
+rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
