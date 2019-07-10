@@ -1,5 +1,7 @@
 import eel, json, os, pypresence, logging, time
 import pycraft
+from pycraft import authentication
+import pycraft.exceptions as pex
 log = logging.Logger("MRS")
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
@@ -31,5 +33,13 @@ launcher = {
   }
 }
 eel.init('page')
+try:
+    auth_token = pycraft.authentication.AuthenticationToken()
+    auth_token.authenticate(id,pw)
+    print(auth_token.client_token)
+    exit()
+except pex.YggdrasilError:
+    print("Failed to login!")
+exit()
 rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Nyaa',start=int(time.time()))
 eel.start('wip.html')
