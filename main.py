@@ -1,4 +1,5 @@
 import eel, json, os, pypresence, logging, time
+import pycraft
 log = logging.Logger("MRS")
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
