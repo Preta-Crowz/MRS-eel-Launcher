@@ -63,11 +63,17 @@ except OSError: pass
 
 info('Start logging')
 
-try:
-    auth_token = pycraft.authentication.AuthenticationToken()
-    auth_token.authenticate(id,pw)
-    info('Logined to ' + id)
-except pex.YggdrasilError:
-    error("Failed to login!")
+@eel.expose
+def login(mcid,mcpw):
+    try:
+        if mcid == "" or mcpw == "":
+            warn("Invalid ID or Password!")
+        auth_token = pycraft.authentication.AuthenticationToken()
+        auth_token.authenticate(mcid,mcpw)
+        info('Logined to ' + mcid)
+    except pex.YggdrasilError:
+        error("Failed to login with " + mcid)
+        return False
+    return auth_token.client_token
 
 rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
