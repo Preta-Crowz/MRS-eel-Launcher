@@ -15,7 +15,8 @@ launcher = {
     'java':os.path.normpath(baseDir+'./runtime/'),
     'license':os.path.normpath(baseDir+'./LICENSE'),
     'updater':os.path.normpath(baseDir+'./updater.py'),
-    'data':os.path.normpath(baseDir+'./data/')
+    'data':os.path.normpath(baseDir+'./data/'),
+    'mclib':os.path.normpath(baseDir+'./lib/'),
   },
   'url':{
     'list':'https://api.mysticrs.tk/list',
