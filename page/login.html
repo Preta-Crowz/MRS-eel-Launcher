@@ -1,1 +1,35 @@
-<script type="text/javascript" src="/eel.js"></script>
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MRS Launcher - Login</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript" src="/jquery.js"></script>
+    <script type="text/javascript" src="/jquery.cookie.js"></script>
+    <script type="text/javascript">
+      function saveToken(token){
+        var date = new Date()
+        $.cookie("token", token, {path: "/", domain: "localhost"});
+        return token
+      }
+    </script>
+  </head>
+  <body>
+    <form id="lform">
+      <label for="id">아이디</label>
+      <input name="id" id="id">
+      <label for="password">비밀번호</label>
+      <input type="password" name="password" id="password">
+      <button type="button" id="login" name="login" form="lform">로그인</button>
+    </form>
+    <script type="text/javascript">
+      $("#login").on("click", function(event){
+        return eel.login($("#id").val(), $("#password").val())(saveToken)
+      })
+    </script>
+
+    <form action="https://account.mojang.com/password" method="get">
+      <input type="submit" value="비밀번호 찾기">
+    </form>
+  </body>
+</html>

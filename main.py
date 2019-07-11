@@ -36,6 +36,11 @@ launcher = {
 eel.init('page')
 
 @eel.expose
+def getLauncher():
+    global launcher
+    return launcher
+
+@eel.expose
 def debug(data):
     eel.debug(data)
     return logger.debug(data)
@@ -57,7 +62,7 @@ def fatal(data):
     return logger.fatal(data)
 
 try:
-    mainThread = threading.Thread(target=eel.start,args=('wip.html','log.html'),kwargs={'size':(600,400)})
+    mainThread = threading.Thread(target=eel.start,args=('login.html','log.html'),kwargs={'size':(600,400)})
     mainThread.start()
 except OSError: pass
 
