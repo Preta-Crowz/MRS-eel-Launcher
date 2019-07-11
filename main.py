@@ -75,7 +75,10 @@ def login(mcid,mcpw):
             warn("Invalid ID or Password!")
         auth_token = pycraft.authentication.AuthenticationToken()
         auth_token.authenticate(mcid,mcpw)
-        info('Logined to ' + mcid)
+        username = auth_token.profile.name
+        info('Logined to ' + username)
+        global rpc
+        rpc.update(state='Select a Modpack',details='Logined to ' + username,large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
         return False

@@ -24,7 +24,10 @@
     </form>
     <script type="text/javascript">
       $("#login").on("click", function(event){
-        return eel.login($("#id").val(), $("#password").val())(saveToken)
+        var token = eel.login($("#id").val(), $("#password").val())(saveToken)
+        if(token){
+          window.location.href = "/wip.html"
+        }
       })
     </script>
 
