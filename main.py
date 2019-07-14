@@ -8,9 +8,9 @@ ndate = now[2:10].replace('-','')
 ntime = now[11:17].replace(':','')
 now = ndate+'_'+ntime
 tfm = '%H:%M:%S'
-fmt = '[%(levelname)s|MRS] %(funcName)s@%(asctime)s > %(message)s'
+fmt = '[%(levelname)s|%(asctime)s] > %(message)s'
 formatter = logging.Formatter(fmt=fmt,datefmt=tfm)
-file = logging.FileHandler('log/{}_{}.log'.format("MRS",now))
+file = logging.FileHandler(f'log/MRS_{now}.log')
 file.setLevel(0)
 file.setFormatter(formatter)
 stream = logging.StreamHandler()
