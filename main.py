@@ -85,8 +85,6 @@ try:
     mainThread.start()
 except OSError: pass
 
-info('Start logging')
-
 @eel.expose
 def login(mcid,mcpw):
     try:
