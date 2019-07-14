@@ -1,15 +1,30 @@
-import json, os, pypresence, logging, time, threading, eel
+import json, os, pypresence, logging, time, threading, eel, datetime
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
 logger = logging.Logger("MRS")
+now = str(datetime.datetime.now())
+ndate = now[2:10].replace('-','')
+ntime = now[11:17].replace(':','')
+now = ndate+'_'+ntime
+tfm = '%H:%M:%S'
+fmt = '[%(levelname)s|MRS] %(funcName)s@%(asctime)s > %(message)s'
+formatter = logging.Formatter(fmt=fmt,datefmt=tfm)
+file = logging.FileHandler('log/{}_{}.log'.format("MRS",now))
+file.setLevel(0)
+file.setFormatter(formatter)
+stream = logging.StreamHandler()
+stream.setLevel(0)
+stream.setFormatter(formatter)
+logger.addHandler(file)
+logger.addHandler(stream)
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
 
 baseDir = os.path.dirname(os.path.realpath(__file__))+'/'
 launcher = {
   'name':'MRS Minecraft Launcher',
-  'cn':'CODENAME_ZERO',
+  'cn':'ZERO',
   'ver':{
     'major':0,
     'minor':0,
@@ -34,6 +49,10 @@ launcher = {
 }
 
 eel.init('page')
+
+@eel.expose
+def close():
+    exit()
 
 @eel.expose
 def getLauncher():
@@ -62,7 +81,7 @@ def fatal(data):
     return logger.fatal(data)
 
 try:
-    mainThread = threading.Thread(target=eel.start,args=('login.html','log.html'),kwargs={'size':(600,400)})
+    mainThread = threading.Thread(target=eel.start,args=('login.html','log.html'),kwargs={'size':(1200,800)})
     mainThread.start()
 except OSError: pass
 
@@ -72,7 +91,7 @@ info('Start logging')
 def login(mcid,mcpw):
     try:
         if mcid == "" or mcpw == "":
-            warn("Invalid ID or Password!")
+           warn("Invalid ID or Password!")
         auth_token = pycraft.authentication.AuthenticationToken()
         auth_token.authenticate(mcid,mcpw)
         username = auth_token.profile.name
@@ -84,4 +103,4 @@ def login(mcid,mcpw):
         return False
     return auth_token.client_token
 
-rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
+rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time())) 

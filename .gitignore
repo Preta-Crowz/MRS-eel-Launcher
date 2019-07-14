@@ -1,4 +1,4 @@
 
-debug.log
+*.log
 pycraft/__pycache__
 __pycache__

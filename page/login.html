@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
   <head>
     <title>MRS Launcher - Login</title>
@@ -10,6 +9,7 @@
       function saveToken(token){
         var date = new Date()
         $.cookie("token", token, {path: "/", domain: "localhost"});
+        if(token) window.location.href = "/wip.html"
         return token
       }
     </script>
@@ -25,12 +25,8 @@
     <script type="text/javascript">
       $("#login").on("click", function(event){
         var token = eel.login($("#id").val(), $("#password").val())(saveToken)
-        if(token){
-          window.location.href = "/wip.html"
-        }
       })
     </script>
-
     <form action="https://account.mojang.com/password" method="get">
       <input type="submit" value="비밀번호 찾기">
     </form>
