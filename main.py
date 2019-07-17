@@ -130,7 +130,7 @@ def getJava():
     return javaw
 
 @eel.expose
-def launch(version, name, memory=4):
+def launch(version, name, memory=1):
     cmd = " ".join([
         getJava(),
         "-XX:HeapDumpPath=minecraft.heapdump",
