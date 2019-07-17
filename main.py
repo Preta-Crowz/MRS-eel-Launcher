@@ -1,4 +1,4 @@
-import json, os, pypresence, logging, time, threading, eel, datetime
+import json, os, pypresence, logging, time, threading, eel, datetime, platform
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
@@ -120,6 +120,12 @@ def getLibs(version):
     for lib in data["libraries"]:
         libs.append(libDir(lib["name"]))
     return ";".join(libs)
+
+def getJava()
+    javaw = os.path.normpath(getLauncher()["path"]["java"]+"/bin/javaw")
+    if platform.system() == "Windows":
+        return javaw + ".exe"
+    return javaw
 
 @eel.expose
 def launch():
