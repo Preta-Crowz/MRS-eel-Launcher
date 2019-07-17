@@ -1,0 +1,2 @@
+pypresence
+https://github.com/ChrisKnott/Eel
