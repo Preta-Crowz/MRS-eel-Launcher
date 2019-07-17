@@ -1,2 +1,16 @@
 <script type="text/javascript" src="/eel.js"></script>
+<script type="text/javascript" src="/jquery.js"></script>
+<script type="text/javascript" src="/jquery.cookie.js"></script>
 <p>This launcher is work in progress now.</p>
+<form id="lform">
+  <button type="button" id="launch" name="launch" form="lform">테스트 실행</button>
+</form>
+<script type="text/javascript">
+  eel.expose(getToken)
+  function getToken(){
+    return $.cookie("token")
+  }
+  $("#launch").on("click", function(event){
+    return eel.launch("1.14.3", $.cookie("name"))((n)=>{return n})
+  })
+</script>

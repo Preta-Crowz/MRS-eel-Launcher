@@ -1,4 +1,4 @@
-import json, os, pypresence, logging, time, threading, eel, datetime, platform
+import json, os, pypresence, logging, time, threading, eel, datetime, platform, requests, subprocess
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
@@ -29,7 +29,8 @@ launcher = {
     'major':0,
     'minor':0,
     'patch':0,
-    'build':0
+    'build':0,
+    'str':"0.0.0.0"
   },
   'path':{
     'main':baseDir,
@@ -101,17 +102,18 @@ def login(mcid,mcpw):
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
         return False
-    return auth_token.client_token
+    return [auth_token.profile.name,auth_token.client_token]
 
 rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
 
 def getuuid(name):
-    return json.loads(requests.get("https://api.mojang.com/users/profiles/minecraft/"+name))["id"]
+    r = requests.get("https://api.mojang.com/users/profiles/minecraft/"+name).text
+    return json.loads(r)["id"]
 
 def libDir(name):
     l = name.split(":")
     l[0] = l[0].replace(".","/")
-    return os.path.normpath(getLauncher()["path"]["mclib"]+"{0}/{1}/{2}/{1}-{2}.jar".format(*l))
+    return os.path.normpath(getLauncher()["path"]["mclib"]+"/{0}/{1}/{2}/{1}-{2}.jar".format(*l))
 
 def getLibs(version):
     f = open(getLauncher()["path"]["mcver"]+"/"+version+".json")
@@ -121,12 +123,53 @@ def getLibs(version):
         libs.append(libDir(lib["name"]))
     return ";".join(libs)
 
-def getJava()
+def getJava():
     javaw = os.path.normpath(getLauncher()["path"]["java"]+"/bin/javaw")
     if platform.system() == "Windows":
         return javaw + ".exe"
     return javaw
 
 @eel.expose
-def launch():
-    pass
+def launch(version, name, memory=4):
+    cmd = " ".join([
+        getJava(),
+        "-XX:HeapDumpPath=minecraft.heapdump",
+        "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"]+"/temp"),
+        "-Dminecraft.launcher.brand=mrs-eel-launcher",
+        "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
+        "-cp",
+        getLibs(version),
+        "-Xmx" + str(memory*1024) +"M",
+        "-XX:+UnlockExperimentalVMOptions",
+        "-XX:+UseG1GC",
+        "-XX:G1NewSizePercent=20",
+        "-XX:G1ReservePercent=20",
+        "-XX:MaxGCPauseMillis=50",
+        "-XX:G1HeapRegionSize=32M",
+        "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
+        "net.minecraft.client.main.Main",
+        "--username",
+        name,
+        "--version",
+        version,
+        "--gameDir",
+        os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
+        "--assetsDir",
+        getLauncher()["path"]["assets"],
+        "--assetIndex",
+        version.split(".")[0]+"."+version.split(".")[1],
+        "--uuid",
+        getuuid(name),
+        "--accessToken",
+        eel.getToken()(),
+        "--userType",
+        "mojang",
+        "--versionType",
+        "release"
+        ])
+    mc = subprocess.Popen(cmd)
+    mc.wait()
+    if mc.returncode:
+        fatal(f"Client returned {mc.returncode}!")
+        debug(cmd)
+    return mc.returncode
