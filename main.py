@@ -1,8 +1,8 @@
-import json, os, pypresence, logging, time, threading, eel, datetime, platform, requests, subprocess
-from xml.etree.ElementTree import fromstring as readxml
+import json, os, pypresence, logging, time, threading, eel, datetime, platform, requests, subprocess, re
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
+
 logger = logging.Logger("MRS")
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-','')
@@ -11,7 +11,7 @@ now = ndate+'_'+ntime
 tfm = '%H:%M:%S'
 fmt = '[%(levelname)s|%(asctime)s] > %(message)s'
 formatter = logging.Formatter(fmt=fmt,datefmt=tfm)
-file = logging.FileHandler(f'log/MRS_{now}.log')
+file = logging.FileHandler(f'logs/MRS_{now}.log')
 file.setLevel(0)
 file.setFormatter(formatter)
 stream = logging.StreamHandler()
@@ -101,7 +101,7 @@ def login(mcid,mcpw):
         username = auth_token.profile.name
         info('Logined to ' + username)
         global rpc
-        rpc.update(state='Select a Modpack',details='Logined to ' + username,large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
+        rpc.update(state='Selectting a Modpack', details='Logined to ' + username, large_image='favicon', large_text='Mystic Red Space')
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
         return False
@@ -109,7 +109,7 @@ def login(mcid,mcpw):
     currToken = auth_token.access_token
     return [auth_token.profile.name,auth_token.client_token]
 
-rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
+rpc.update(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space', start=int(time.time()))
 
 def getuuid(name):
     r = requests.get("https://api.mojang.com/users/profiles/minecraft/"+name).text
@@ -137,12 +137,56 @@ def getJava():
         return javaw + ".exe"
     return javaw
 
-def log_subprocess_output(pipe):
+nextLog = False
+nLogThread = ""
+nLogLevel = ""
+nextOutput = ""
+def logOutput(pipe):
     for line in iter(pipe.readline, b'\n'):
-        info('got line from subprocess: %r', readxml(line))
+        global nextLog, nLogThread, nLogLevel, nextOutput
+        lastOutput = line.decode()
+        if lastOutput == "": return
+        if lastOutput.startswith("AL lib"): return
+        baseRegex = r'<log4j:Event logger=".+" timestamp="\d+" level="(?P<level>.+)" thread="(?P<thread>.+)">'
+        rmatch = re.search(baseRegex, lastOutput)
+        if rmatch:
+            if rmatch["level"] == "DEBUG":
+                nextLog = debug
+            elif rmatch["level"] == "INFO":
+                nextLog = info
+            elif rmatch["level"] == "WARN":
+                nextLog = warn
+            elif rmatch["level"] == "ERROR":
+                nextLog = error
+            elif rmatch["level"] == "FATAL":
+                nextLog = fatal
+            else: continue
+            nLogThread = rmatch["thread"]
+            nLogLevel = rmatch["level"]
+            continue
+        elif nextLog:
+            passRegex = r"</log4j:Event>|Narrator library"
+            if re.search(passRegex,lastOutput): continue
+            logRegex = r"<log4j:Message><!\[CDATA\[(?P<output>.+)\]\]>(</log4j:Message>)?"
+            output = re.search(logRegex,lastOutput)
+            end = r"</log4j:Message>"
+            outEnd = re.search(end,lastOutput)
+            if output and outEnd:
+                nextLog("[" + nLogThread + "/" + nLogLevel + "] " + output["output"])
+                nextOutput = ""
+            elif output:
+                nextOutput += lastOutput
+            else:
+                nextLog("[" + nLogThread + "/" + nLogLevel + "] " + nextOutput + lastOutput)
+                nextOutput = ""
+            continue
+        else:
+            debug(lastOutput)
 
 @eel.expose
-def launch(version, name, memory=1):
+def launch(version, name, modpack=False, memory=1):
+    if not modpack: modpack = "Vanilla " + version
+    info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
         "-XX:HeapDumpPath=minecraft.heapdump",
@@ -180,9 +224,9 @@ def launch(version, name, memory=1):
         "release"
         ])
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space', start=int(time.time()))
     with mc.stdout as gameLog:
-        log_subprocess_output(gameLog)
-    mc.wait()
+        logOutput(gameLog)
     if mc.returncode:
         fatal(f"Client returned {mc.returncode}!")
         debug(cmd)
