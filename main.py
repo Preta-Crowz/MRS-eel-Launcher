@@ -38,7 +38,8 @@ launcher = {
     'license':os.path.normpath(baseDir+'./LICENSE'),
     'updater':os.path.normpath(baseDir+'./updater.py'),
     'data':os.path.normpath(baseDir+'./data/'),
-    'mclib':os.path.normpath(baseDir+'./forge/'),
+    'mclib':os.path.normpath(baseDir+'./lib/'),
+    'mcver':os.path.normpath(baseDir+'./versions/'),
   },
   'url':{
     'list':'https://api.mysticrs.tk/list',
@@ -101,4 +102,22 @@ def login(mcid,mcpw):
         return False
     return auth_token.client_token
 
-rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time())) 
+rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
+
+def libDir(name):
+    l = name.split(":")
+    l[0] = l[0].replace(".","/")
+    return os.path.normpath(getLauncher()["path"]["mclib"]+"{0}/{1}/{2}/{1}-{2}.jar".format(*l))
+
+def getLibs(version):
+    f = open(getLauncher()["path"]["mcver"]+"/"+version+".json")
+    data = json.load(f)
+    libs = []
+    for lib in data["libraries"]:
+        libs.append(libDir(lib["name"]))
+    return ";".join(libs)
+
+
+@eel.expose
+def launch():
+    pass
