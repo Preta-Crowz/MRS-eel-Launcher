@@ -40,6 +40,7 @@ launcher = {
     'data':os.path.normpath(baseDir+'./data/'),
     'mclib':os.path.normpath(baseDir+'./lib/'),
     'mcver':os.path.normpath(baseDir+'./versions/'),
+    'assets':os.path.normpath(baseDir+'./assets/')
   },
   'url':{
     'list':'https://api.mysticrs.tk/list',
@@ -104,6 +105,9 @@ def login(mcid,mcpw):
 
 rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
 
+def getuuid(name):
+    return json.loads(requests.get("https://api.mojang.com/users/profiles/minecraft/"+name))["id"]
+
 def libDir(name):
     l = name.split(":")
     l[0] = l[0].replace(".","/")
@@ -116,7 +120,6 @@ def getLibs(version):
     for lib in data["libraries"]:
         libs.append(libDir(lib["name"]))
     return ";".join(libs)
-
 
 @eel.expose
 def launch():
