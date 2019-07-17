@@ -35,7 +35,7 @@
       function warn(data){
         console.warn(data)
         stblock = visWarn ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"W\""+stblock+">[WARNING|"+nowtf()+"] > " + data + "</p>")
+        $("#logs").append("<p class=\"W\""+stblock+">[WARN|"+nowtf()+"] > " + data + "</p>")
       }
       function error(data){
         console.error(data)
@@ -43,7 +43,7 @@
         $("#logs").append("<p class=\"E\""+stblock+">[ERROR|"+nowtf()+"] > " + data + "</p>")
       }
       function fatal(data){
-        console.fatal(data)
+        console.error(data)
         stblock = visFatal ? "" : " style=\"display: none;\""
         $("#logs").append("<p class=\"F\""+stblock+">[FATAL|"+nowtf()+"] > " + data + "</p>")
       }

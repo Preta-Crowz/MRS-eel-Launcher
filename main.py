@@ -1,4 +1,5 @@
 import json, os, pypresence, logging, time, threading, eel, datetime, platform, requests, subprocess
+from xml.etree.ElementTree import fromstring as readxml
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
@@ -20,6 +21,8 @@ logger.addHandler(file)
 logger.addHandler(stream)
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
+currToken = False
+
 
 baseDir = os.path.dirname(os.path.realpath(__file__))+'/'
 launcher = {
@@ -102,6 +105,8 @@ def login(mcid,mcpw):
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
         return False
+    global currToken
+    currToken = auth_token.access_token
     return [auth_token.profile.name,auth_token.client_token]
 
 rpc.update(state='Developing',details='MRS NEW LAUNCHER',large_image='favicon',large_text='Mystic Red Space',start=int(time.time()))
@@ -113,6 +118,9 @@ def getuuid(name):
 def libDir(name):
     l = name.split(":")
     l[0] = l[0].replace(".","/")
+    if l[1].startswith("lwjgl") and platform.system() == "Windows":
+        return os.path.normpath(getLauncher()["path"]["mclib"]+"/{0}/{1}/{2}/{1}-{2}.jar".format(*l)) + ";" + \
+            os.path.normpath(getLauncher()["path"]["mclib"]+"/{0}/{1}/{2}/{1}-{2}-natives-windows.jar".format(*l))
     return os.path.normpath(getLauncher()["path"]["mclib"]+"/{0}/{1}/{2}/{1}-{2}.jar".format(*l))
 
 def getLibs(version):
@@ -129,6 +137,10 @@ def getJava():
         return javaw + ".exe"
     return javaw
 
+def log_subprocess_output(pipe):
+    for line in iter(pipe.readline, b'\n'):
+        info('got line from subprocess: %r', readxml(line))
+
 @eel.expose
 def launch(version, name, memory=1):
     cmd = " ".join([
@@ -138,7 +150,7 @@ def launch(version, name, memory=1):
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
         "-cp",
-        getLibs(version),
+        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar"),
         "-Xmx" + str(memory*1024) +"M",
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseG1GC",
@@ -161,13 +173,15 @@ def launch(version, name, memory=1):
         "--uuid",
         getuuid(name),
         "--accessToken",
-        eel.getToken()(),
+        currToken,
         "--userType",
         "mojang",
         "--versionType",
         "release"
         ])
-    mc = subprocess.Popen(cmd)
+    mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    with mc.stdout as gameLog:
+        log_subprocess_output(gameLog)
     mc.wait()
     if mc.returncode:
         fatal(f"Client returned {mc.returncode}!")
