@@ -14,6 +14,14 @@
             if (data[1]) window.location.href = "/wip.html"
             return data[1]
         }
+        var warned = false
+        eel.expose(loadInfo)
+        function loadInfo(data){
+            $("#id").val(data.mail)
+            $("#password").val(data.pass)
+            warned = true
+            $('#saveInfo').click()
+        }
     </script>
 </head>
 <body>
@@ -23,11 +31,21 @@
     <input id="id" name="id" placeholder="Username" type="text">
     <input id="password" name="password" placeholder="Password" type="password">
     <input form="lform" id="login" name="login" type="button" value="Login">
+    <label for="saveInfo">계정 저장</label>
+    <input id="saveInfo" name="saveInfo" type="checkbox"/>
+    <br />
     <a href="https://account.mojang.com/password">비밀번호를 잊으셨나요?</a>
 </form>
 <script type="text/javascript">
     $("#login").on("click", function (event) {
-        var token = eel.login($("#id").val(), $("#password").val())(saveToken)
+        var token = eel.login($("#id").val(), $("#password").val(), $("#saveInfo").checked)(saveToken)
+    })
+    
+    $("#saveInfo").on("click", function (event) {
+        if($("#saveInfo").checked && !warned){
+            warned = true
+            alert("계정 정보는 평문으로 저장되며, 보안에 취약 할 수 있습니다.")
+        }
     })
 </script>
 <!--<form action="https://account.mojang.com/password" method="get">

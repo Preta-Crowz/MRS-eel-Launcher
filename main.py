@@ -117,8 +117,12 @@ except OSError:
     pass
 
 
+if os.path.exists(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai")):
+    eel.loadInfo(json.load(open(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai"))))
+
+
 @eel.expose
-def login(mcid, mcpw):
+def login(mcid, mcpw, saveInfo):
     try:
         if mcid == "" or mcpw == "":
             warn("Invalid ID or Password!")
@@ -134,6 +138,9 @@ def login(mcid, mcpw):
         return False
     global currToken
     currToken = auth_token.access_token
+    if saveInfo:
+        print("Save info for " + username + " to mai file")
+        saveToFile(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai"), {"mail":mcid,"pass":mcpw})
     return [auth_token.profile.name, auth_token.client_token]
 
 
