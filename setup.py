@@ -21,8 +21,8 @@ dirs = [
     os.path.normpath(baseDir+'/assets/skins'),
     os.path.normpath(baseDir+'/assets/virtual'),
     ]
-dirs.append(hashLoop(os.path.normpath(baseDir+'/assets/objects')))
-dirs.append(hashLoop(os.path.normpath(baseDir+'/assets/skins')))
+dirs += hashLoop(os.path.normpath(baseDir+'/assets/objects'))
+dirs += hashLoop(os.path.normpath(baseDir+'/assets/skins'))
 for d in dirs:
     try: os.mkdir(d)
     except: pass
