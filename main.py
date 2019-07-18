@@ -2,7 +2,7 @@ import json, os, pypresence, logging, time, threading, eel, datetime, platform, 
 import pycraft
 from pycraft import authentication
 import pycraft.exceptions as pex
-
+import setup
 logger = logging.Logger("MRS")
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-','')
