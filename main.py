@@ -120,9 +120,8 @@ except OSError:
 if os.path.exists(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai")):
     eel.loadInfo(json.load(open(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai"))))
 
-
 @eel.expose
-def login(mcid, mcpw, saveInfo):
+def login(mcid, mcpw):
     try:
         if mcid == "" or mcpw == "":
             warn("Invalid ID or Password!")
@@ -138,10 +137,22 @@ def login(mcid, mcpw, saveInfo):
         return False
     global currToken
     currToken = auth_token.access_token
-    if saveInfo:
-        print("Save info for " + username + " to mai file")
-        saveToFile(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai"), {"mail":mcid,"pass":mcpw})
-    return [auth_token.profile.name, auth_token.client_token]
+    return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
+
+
+@eel.expose
+def isTokenVaild():
+    auth_token = pycraft.AuthenticationToken(*(eel.loadToken()()))
+    return bool(auth_token.validate())
+
+
+@eel.expose
+def refreshToken():
+    global currToken, auth_token
+    auth_token = pycraft.AuthenticationToken(*(eel.loadToken()()))
+    auth_token.refresh()
+    currToken = auth_token.access_token
+    return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
 
 
 rpc.update(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space',
