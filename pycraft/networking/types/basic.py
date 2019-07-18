@@ -3,11 +3,11 @@ Each type has a method which is used to read and write it.
 These definitions and methods are used by the packet definitions
 """
 from __future__ import division
+
 import struct
 import uuid
 
 from .utility import Vector
-
 
 __all__ = (
     'Type', 'Boolean', 'UnsignedByte', 'Byte', 'Short', 'UnsignedShort',
@@ -296,14 +296,14 @@ class Position(Type, Vector):
     @staticmethod
     def read_with_context(file_object, context):
         location = UnsignedLong.read(file_object)
-        x = int(location >> 38)                # 26 most significant bits
+        x = int(location >> 38)  # 26 most significant bits
 
         if context.protocol_version >= 443:
             z = int((location >> 12) & 0x3FFFFFF)  # 26 intermediate bits
-            y = int(location & 0xFFF)              # 12 least signficant bits
+            y = int(location & 0xFFF)  # 12 least signficant bits
         else:
-            y = int((location >> 26) & 0xFFF)      # 12 intermediate bits
-            z = int(location & 0x3FFFFFF)          # 26 least significant bits
+            y = int((location >> 26) & 0xFFF)  # 12 intermediate bits
+            z = int(location & 0x3FFFFFF)  # 26 least significant bits
 
         if x >= pow(2, 25):
             x -= pow(2, 26)

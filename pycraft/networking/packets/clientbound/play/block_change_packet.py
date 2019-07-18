@@ -9,10 +9,10 @@ class BlockChangePacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x0B if context.protocol_version >= 332 else \
-               0x0C if context.protocol_version >= 318 else \
-               0x0B if context.protocol_version >= 67 else \
-               0x24 if context.protocol_version >= 62 else \
-               0x23
+            0x0C if context.protocol_version >= 318 else \
+                0x0B if context.protocol_version >= 67 else \
+                    0x24 if context.protocol_version >= 62 else \
+                        0x23
 
     packet_name = 'block change'
     definition = [
@@ -46,10 +46,10 @@ class MultiBlockChangePacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x0F if context.protocol_version >= 343 else \
-               0x10 if context.protocol_version >= 332 else \
-               0x11 if context.protocol_version >= 318 else \
-               0x10 if context.protocol_version >= 67 else \
-               0x22
+            0x10 if context.protocol_version >= 332 else \
+                0x11 if context.protocol_version >= 318 else \
+                    0x10 if context.protocol_version >= 67 else \
+                        0x22
 
     packet_name = 'multi block change'
 

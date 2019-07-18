@@ -1,34 +1,37 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html dir="ltr" lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet">
     <title>MRS Launcher - Login</title>
-    <script type="text/javascript" src="/eel.js"></script>
-    <script type="text/javascript" src="/jquery.js"></script>
-    <script type="text/javascript" src="/jquery.cookie.js"></script>
+    <script src="/eel.js" type="text/javascript"></script>
+    <script src="/jquery.js" type="text/javascript"></script>
+    <script src="/jquery.cookie.js" type="text/javascript"></script>
     <script type="text/javascript">
-      function saveToken(data){
-        $.cookie("name", data[0], {path: "/", domain: "localhost"});
-        $.cookie("token", data[1], {path: "/", domain: "localhost"});
-        if(data[1]) window.location.href = "/wip.html"
-        return data[1]
-      }
+        function saveToken(data) {
+            $.cookie("name", data[0], {path: "/", domain: "localhost"});
+            $.cookie("token", data[1], {path: "/", domain: "localhost"});
+            if (data[1]) window.location.href = "/wip.html"
+            return data[1]
+        }
     </script>
-  </head>
-  <body>
-    <form id="lform">
-      <label for="id">아이디</label>
-      <input name="id" id="id">
-      <label for="password">비밀번호</label>
-      <input type="password" name="password" id="password">
-      <button type="button" id="login" name="login" form="lform">로그인</button>
-    </form>
-    <script type="text/javascript">
-      $("#login").on("click", function(event){
+</head>
+<body>
+
+<form action="index.html" class="box" id="lform" method="post">
+    <h1>Login</h1>
+    <input id="id" name="id" placeholder="Username" type="text">
+    <input id="password" name="password" placeholder="Password" type="password">
+    <input form="lform" id="login" name="login" type="button" value="Login">
+</form>
+<script type="text/javascript">
+    $("#login").on("click", function (event) {
         var token = eel.login($("#id").val(), $("#password").val())(saveToken)
-      })
-    </script>
-    <form action="https://account.mojang.com/password" method="get">
-      <input type="submit" value="비밀번호 찾기">
-    </form>
-  </body>
+    })
+</script>
+<form action="https://account.mojang.com/password" method="get">
+    <input type="submit" value="비밀번호 찾기">
+</form>
+
+</body>
 </html>

@@ -1,7 +1,6 @@
 from minecraft.networking.packets import (
     Packet, AbstractKeepAlivePacket, AbstractPluginMessagePacket
 )
-
 from minecraft.networking.types import (
     Double, Float, Boolean, VarInt, String, Byte, Position, Enum,
     RelativeHand, BlockFace, Vector, Direction, PositionAndLook,
@@ -38,32 +37,32 @@ class KeepAlivePacket(AbstractKeepAlivePacket):
     @staticmethod
     def get_id(context):
         return 0x0F if context.protocol_version >= 471 else \
-               0x10 if context.protocol_version >= 464 else \
-               0x0E if context.protocol_version >= 389 else \
-               0x0C if context.protocol_version >= 386 else \
-               0x0B if context.protocol_version >= 345 else \
-               0x0A if context.protocol_version >= 343 else \
-               0x0B if context.protocol_version >= 336 else \
-               0x0C if context.protocol_version >= 318 else \
-               0x0B if context.protocol_version >= 107 else \
-               0x00
+            0x10 if context.protocol_version >= 464 else \
+                0x0E if context.protocol_version >= 389 else \
+                    0x0C if context.protocol_version >= 386 else \
+                        0x0B if context.protocol_version >= 345 else \
+                            0x0A if context.protocol_version >= 343 else \
+                                0x0B if context.protocol_version >= 336 else \
+                                    0x0C if context.protocol_version >= 318 else \
+                                        0x0B if context.protocol_version >= 107 else \
+                                            0x00
 
 
 class ChatPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x03 if context.protocol_version >= 464 else \
-               0x02 if context.protocol_version >= 389 else \
-               0x01 if context.protocol_version >= 343 else \
-               0x02 if context.protocol_version >= 336 else \
-               0x03 if context.protocol_version >= 318 else \
-               0x02 if context.protocol_version >= 107 else \
-               0x01
+            0x02 if context.protocol_version >= 389 else \
+                0x01 if context.protocol_version >= 343 else \
+                    0x02 if context.protocol_version >= 336 else \
+                        0x03 if context.protocol_version >= 318 else \
+                            0x02 if context.protocol_version >= 107 else \
+                                0x01
 
     @staticmethod
     def get_max_length(context):
         return 256 if context.protocol_version >= 306 else \
-               100
+            100
 
     @property
     def max_length(self):
@@ -79,16 +78,16 @@ class PositionAndLookPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x12 if context.protocol_version >= 471 else \
-               0x13 if context.protocol_version >= 464 else \
-               0x11 if context.protocol_version >= 389 else \
-               0x0F if context.protocol_version >= 386 else \
-               0x0E if context.protocol_version >= 345 else \
-               0x0D if context.protocol_version >= 343 else \
-               0x0E if context.protocol_version >= 336 else \
-               0x0F if context.protocol_version >= 332 else \
-               0x0E if context.protocol_version >= 318 else \
-               0x0D if context.protocol_version >= 107 else \
-               0x06
+            0x13 if context.protocol_version >= 464 else \
+                0x11 if context.protocol_version >= 389 else \
+                    0x0F if context.protocol_version >= 386 else \
+                        0x0E if context.protocol_version >= 345 else \
+                            0x0D if context.protocol_version >= 343 else \
+                                0x0E if context.protocol_version >= 336 else \
+                                    0x0F if context.protocol_version >= 332 else \
+                                        0x0E if context.protocol_version >= 318 else \
+                                            0x0D if context.protocol_version >= 107 else \
+                                                0x06
 
     packet_name = "position and look"
     definition = [
@@ -125,15 +124,15 @@ class AnimationPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x2A if context.protocol_version >= 468 else \
-               0x29 if context.protocol_version >= 464 else \
-               0x27 if context.protocol_version >= 389 else \
-               0x25 if context.protocol_version >= 386 else \
-               0x1D if context.protocol_version >= 345 else \
-               0x1C if context.protocol_version >= 343 else \
-               0x1D if context.protocol_version >= 332 else \
-               0x1C if context.protocol_version >= 318 else \
-               0x1A if context.protocol_version >= 107 else \
-               0x0A
+            0x29 if context.protocol_version >= 464 else \
+                0x27 if context.protocol_version >= 389 else \
+                    0x25 if context.protocol_version >= 386 else \
+                        0x1D if context.protocol_version >= 345 else \
+                            0x1C if context.protocol_version >= 343 else \
+                                0x1D if context.protocol_version >= 332 else \
+                                    0x1C if context.protocol_version >= 318 else \
+                                        0x1A if context.protocol_version >= 107 else \
+                                            0x0A
 
     packet_name = "animation"
     get_definition = staticmethod(lambda context: [
@@ -147,14 +146,14 @@ class ClientStatusPacket(Packet, Enum):
     @staticmethod
     def get_id(context):
         return 0x04 if context.protocol_version >= 464 else \
-               0x03 if context.protocol_version >= 389 else \
-               0x02 if context.protocol_version >= 343 else \
-               0x03 if context.protocol_version >= 336 else \
-               0x04 if context.protocol_version >= 318 else \
-               0x03 if context.protocol_version >= 80 else \
-               0x02 if context.protocol_version >= 67 else \
-               0x17 if context.protocol_version >= 49 else \
-               0x16
+            0x03 if context.protocol_version >= 389 else \
+                0x02 if context.protocol_version >= 343 else \
+                    0x03 if context.protocol_version >= 336 else \
+                        0x04 if context.protocol_version >= 318 else \
+                            0x03 if context.protocol_version >= 80 else \
+                                0x02 if context.protocol_version >= 67 else \
+                                    0x17 if context.protocol_version >= 49 else \
+                                        0x16
 
     packet_name = "client status"
     get_definition = staticmethod(lambda context: [
@@ -172,13 +171,13 @@ class PluginMessagePacket(AbstractPluginMessagePacket):
     @staticmethod
     def get_id(context):
         return 0x0B if context.protocol_version >= 464 else \
-               0x0A if context.protocol_version >= 389 else \
-               0x09 if context.protocol_version >= 345 else \
-               0x08 if context.protocol_version >= 343 else \
-               0x09 if context.protocol_version >= 336 else \
-               0x0A if context.protocol_version >= 317 else \
-               0x09 if context.protocol_version >= 94 else \
-               0x17
+            0x0A if context.protocol_version >= 389 else \
+                0x09 if context.protocol_version >= 345 else \
+                    0x08 if context.protocol_version >= 343 else \
+                        0x09 if context.protocol_version >= 336 else \
+                            0x0A if context.protocol_version >= 317 else \
+                                0x09 if context.protocol_version >= 94 else \
+                                    0x17
 
 
 class PlayerBlockPlacementPacket(Packet):
@@ -198,15 +197,15 @@ class PlayerBlockPlacementPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x2C if context.protocol_version >= 468 else \
-               0x2B if context.protocol_version >= 464 else \
-               0x29 if context.protocol_version >= 389 else \
-               0x27 if context.protocol_version >= 386 else \
-               0x1F if context.protocol_version >= 345 else \
-               0x1E if context.protocol_version >= 343 else \
-               0x1F if context.protocol_version >= 332 else \
-               0x1E if context.protocol_version >= 318 else \
-               0x1C if context.protocol_version >= 94 else \
-               0x08
+            0x2B if context.protocol_version >= 464 else \
+                0x29 if context.protocol_version >= 389 else \
+                    0x27 if context.protocol_version >= 386 else \
+                        0x1F if context.protocol_version >= 345 else \
+                            0x1E if context.protocol_version >= 343 else \
+                                0x1F if context.protocol_version >= 332 else \
+                                    0x1E if context.protocol_version >= 318 else \
+                                        0x1C if context.protocol_version >= 94 else \
+                                            0x08
 
     packet_name = 'player block placement'
 
@@ -221,7 +220,7 @@ class PlayerBlockPlacementPacket(Packet):
             {'y': Float if context.protocol_version >= 309 else Byte},
             {'z': Float if context.protocol_version >= 309 else Byte},
             ({'inside_block': Boolean}
-                if context.protocol_version >= 453 else {}),
+             if context.protocol_version >= 453 else {}),
         ]
 
     # PlayerBlockPlacementPacket.Hand is an alias for RelativeHand.
@@ -235,16 +234,16 @@ class UseItemPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x2D if context.protocol_version >= 468 else \
-               0x2C if context.protocol_version >= 464 else \
-               0x2A if context.protocol_version >= 389 else \
-               0x28 if context.protocol_version >= 386 else \
-               0x20 if context.protocol_version >= 345 else \
-               0x1F if context.protocol_version >= 343 else \
-               0x20 if context.protocol_version >= 332 else \
-               0x1F if context.protocol_version >= 318 else \
-               0x1D if context.protocol_version >= 94 else \
-               0x1A if context.protocol_version >= 70 else \
-               0x08
+            0x2C if context.protocol_version >= 464 else \
+                0x2A if context.protocol_version >= 389 else \
+                    0x28 if context.protocol_version >= 386 else \
+                        0x20 if context.protocol_version >= 345 else \
+                            0x1F if context.protocol_version >= 343 else \
+                                0x20 if context.protocol_version >= 332 else \
+                                    0x1F if context.protocol_version >= 318 else \
+                                        0x1D if context.protocol_version >= 94 else \
+                                            0x1A if context.protocol_version >= 70 else \
+                                                0x08
 
     packet_name = "use item"
     get_definition = staticmethod(lambda context: [

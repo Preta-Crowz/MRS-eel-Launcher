@@ -8,58 +8,52 @@ Use the packet classes under packets.clientbound.* and
 packets.serverbound.* instead.
 '''
 
-# Packet-Related Utilities
-from .packet_buffer import PacketBuffer
-from .packet_listener import PacketListener
-
-# Abstract Packet Classes
-from .packet import Packet
-from .keep_alive_packet import AbstractKeepAlivePacket
-from .plugin_message_packet import AbstractPluginMessagePacket
-
-
 # Legacy Packets (Handshake State)
 from .clientbound.handshake import get_packets as state_handshake_clientbound
-from .serverbound.handshake import HandShakePacket
-from .serverbound.handshake import get_packets as state_handshake_serverbound
-
-# Legacy Packets (Status State)
-from .clientbound.status import ResponsePacket
-from .clientbound.status import PingResponsePacket as PingPacketResponse
-from .clientbound.status import get_packets as state_status_clientbound
-from .serverbound.status import RequestPacket
-from .serverbound.status import PingPacket
-from .serverbound.status import get_packets as state_status_serverbound
-
 # Legacy Packets (Login State)
 from .clientbound.login import DisconnectPacket
 from .clientbound.login import EncryptionRequestPacket
 from .clientbound.login import LoginSuccessPacket
 from .clientbound.login import SetCompressionPacket
 from .clientbound.login import get_packets as state_login_clientbound
-from .serverbound.login import LoginStartPacket
-from .serverbound.login import EncryptionResponsePacket
-from .serverbound.login import get_packets as state_login_serverbound
-
-# Legacy Packets (Playing State)
-from .keep_alive_packet import KeepAlivePacket
-from .clientbound.play import KeepAlivePacket as KeepAlivePacketClientbound
-from .serverbound.play import KeepAlivePacket as KeepAlivePacketServerbound
-from .clientbound.play import JoinGamePacket
 from .clientbound.play import ChatMessagePacket
-from .clientbound.play import PlayerPositionAndLookPacket
 from .clientbound.play import DisconnectPacket as DisconnectPacketPlayState
+from .clientbound.play import JoinGamePacket
+from .clientbound.play import KeepAlivePacket as KeepAlivePacketClientbound
+from .clientbound.play import MapPacket
+from .clientbound.play import PlayerListItemPacket
+from .clientbound.play import PlayerPositionAndLookPacket
 from .clientbound.play import (
     SetCompressionPacket as SetCompressionPacketPlayState
 )
-from .clientbound.play import PlayerListItemPacket
-from .clientbound.play import MapPacket
 from .clientbound.play import get_packets as state_playing_clientbound
+from .clientbound.status import PingResponsePacket as PingPacketResponse
+# Legacy Packets (Status State)
+from .clientbound.status import ResponsePacket
+from .clientbound.status import get_packets as state_status_clientbound
+from .keep_alive_packet import AbstractKeepAlivePacket
+# Legacy Packets (Playing State)
+from .keep_alive_packet import KeepAlivePacket
+# Abstract Packet Classes
+from .packet import Packet
+# Packet-Related Utilities
+from .packet_buffer import PacketBuffer
+from .packet_listener import PacketListener
+from .plugin_message_packet import AbstractPluginMessagePacket
+from .serverbound.handshake import HandShakePacket
+from .serverbound.handshake import get_packets as state_handshake_serverbound
+from .serverbound.login import EncryptionResponsePacket
+from .serverbound.login import LoginStartPacket
+from .serverbound.login import get_packets as state_login_serverbound
+from .serverbound.play import AnimationPacket as AnimationPacketServerbound
 from .serverbound.play import ChatPacket
+from .serverbound.play import KeepAlivePacket as KeepAlivePacketServerbound
 from .serverbound.play import PositionAndLookPacket
 from .serverbound.play import TeleportConfirmPacket
-from .serverbound.play import AnimationPacket as AnimationPacketServerbound
 from .serverbound.play import get_packets as state_playing_serverbound
+from .serverbound.status import PingPacket
+from .serverbound.status import RequestPacket
+from .serverbound.status import get_packets as state_status_serverbound
 
 __all_legacy_packets__ = (
     state_handshake_clientbound, HandShakePacket,

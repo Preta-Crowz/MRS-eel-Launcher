@@ -9,12 +9,12 @@ class ClientSettingsPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x05 if context.protocol_version >= 464 else \
-               0x04 if context.protocol_version >= 389 else \
-               0x03 if context.protocol_version >= 343 else \
-               0x04 if context.protocol_version >= 336 else \
-               0x05 if context.protocol_version >= 318 else \
-               0x04 if context.protocol_version >= 94 else \
-               0x15
+            0x04 if context.protocol_version >= 389 else \
+                0x03 if context.protocol_version >= 343 else \
+                    0x04 if context.protocol_version >= 336 else \
+                        0x05 if context.protocol_version >= 318 else \
+                            0x04 if context.protocol_version >= 94 else \
+                                0x15
 
     packet_name = 'client settings'
 
@@ -34,9 +34,9 @@ class ClientSettingsPacket(Packet):
         }.get(field))
 
     class ChatMode(Enum):
-        FULL = 0    # Receive all types of chat messages.
+        FULL = 0  # Receive all types of chat messages.
         SYSTEM = 1  # Receive only command results and game information.
-        NONE = 2    # Receive only game information.
+        NONE = 2  # Receive only game information.
 
     class SkinParts(BitFieldEnum):
         CAPE = 0x01

@@ -1,8 +1,8 @@
-from .packet import Packet
-
 from minecraft.networking.types import (
     VarInt, Long
 )
+
+from .packet import Packet
 
 
 class AbstractKeepAlivePacket(Packet):

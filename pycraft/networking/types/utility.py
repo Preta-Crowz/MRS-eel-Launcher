@@ -6,7 +6,6 @@ from __future__ import division
 from collections import namedtuple
 from itertools import chain
 
-
 __all__ = (
     'Vector', 'MutableRecord', 'Direction', 'PositionAndLook', 'descriptor',
     'attribute_alias', 'multi_attribute_alias',
@@ -25,26 +24,26 @@ class Vector(namedtuple('BaseVector', ('x', 'y', 'z'))):
 
     def __add__(self, other):
         return NotImplemented if not isinstance(other, Vector) else \
-               type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
+            type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def __sub__(self, other):
         return NotImplemented if not isinstance(other, Vector) else \
-               type(self)(self.x - other.x, self.y - other.y, self.z - other.z)
+            type(self)(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __neg__(self):
         return type(self)(-self.x, -self.y, -self.z)
 
     def __mul__(self, other):
-        return type(self)(self.x*other, self.y*other, self.z*other)
+        return type(self)(self.x * other, self.y * other, self.z * other)
 
     def __rmul__(self, other):
-        return type(self)(other*self.x, other*self.y, other*self.z)
+        return type(self)(other * self.x, other * self.y, other * self.z)
 
     def __truediv__(self, other):
-        return type(self)(self.x/other, self.y/other, self.z/other)
+        return type(self)(self.x / other, self.y / other, self.z / other)
 
     def __floordiv__(self, other):
-        return type(self)(self.x//other, self.y//other, self.z//other)
+        return type(self)(self.x // other, self.y // other, self.z // other)
 
     __div__ = __floordiv__
 

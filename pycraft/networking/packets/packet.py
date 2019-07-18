@@ -1,8 +1,10 @@
-from .packet_buffer import PacketBuffer
 from zlib import compress
+
 from minecraft.networking.types import (
     VarInt, Enum
 )
+
+from .packet_buffer import PacketBuffer
 
 
 class Packet(object):

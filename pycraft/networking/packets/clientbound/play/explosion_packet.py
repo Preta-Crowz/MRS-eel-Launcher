@@ -1,20 +1,20 @@
+from minecraft.networking.packets import Packet
 from minecraft.networking.types import (
     Vector, Float, Byte, Integer, multi_attribute_alias,
 )
-from minecraft.networking.packets import Packet
 
 
 class ExplosionPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x1C if context.protocol_version >= 471 else \
-               0x1E if context.protocol_version >= 389 else \
-               0x1D if context.protocol_version >= 345 else \
-               0x1C if context.protocol_version >= 332 else \
-               0x1D if context.protocol_version >= 318 else \
-               0x1C if context.protocol_version >= 80 else \
-               0x1B if context.protocol_version >= 67 else \
-               0x27
+            0x1E if context.protocol_version >= 389 else \
+                0x1D if context.protocol_version >= 345 else \
+                    0x1C if context.protocol_version >= 332 else \
+                        0x1D if context.protocol_version >= 318 else \
+                            0x1C if context.protocol_version >= 80 else \
+                                0x1B if context.protocol_version >= 67 else \
+                                    0x27
 
     packet_name = 'explosion'
 

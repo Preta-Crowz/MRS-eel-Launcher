@@ -1,5 +1,6 @@
-from .packet import Packet
 from minecraft.networking.types import String, TrailingByteArray
+
+from .packet import Packet
 
 
 class AbstractPluginMessagePacket(Packet):

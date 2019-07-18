@@ -1,27 +1,26 @@
 from __future__ import print_function
 
-from collections import deque
-from threading import RLock
-import zlib
-import threading
-import socket
-import timeit
-import select
-import sys
 import json
 import re
+import select
+import socket
+import sys
+import threading
+import timeit
+import zlib
+from collections import deque
+from threading import RLock
 
 from future.utils import raise_
 
-from .types import VarInt
-from .packets import clientbound, serverbound
-from . import packets
 from . import encryption
+from . import packets
+from .packets import clientbound, serverbound
+from .types import VarInt
 from .. import SUPPORTED_PROTOCOL_VERSIONS, SUPPORTED_MINECRAFT_VERSIONS
 from ..exceptions import (
     VersionMismatch, LoginDisconnect, IgnorePacket, InvalidState
 )
-
 
 STATE_STATUS = 1
 STATE_PLAYING = 2
@@ -32,6 +31,7 @@ class ConnectionContext(object):
     shared by the Connection class with other classes, such as Packet.
     Importantly, it can be used without knowing the interface of Connection.
     """
+
     def __init__(self, **kwds):
         self.protocol_version = kwds.get('protocol_version')
 
@@ -50,16 +50,17 @@ class Connection(object):
     server, it handles everything from connecting, sending packets to
     handling default network behaviour
     """
+
     def __init__(
-        self,
-        address,
-        port=25565,
-        auth_token=None,
-        username=None,
-        initial_version=None,
-        allowed_versions=None,
-        handle_exception=None,
-        handle_exit=None,
+            self,
+            address,
+            port=25565,
+            auth_token=None,
+            username=None,
+            initial_version=None,
+            allowed_versions=None,
+            handle_exception=None,
+            handle_exit=None,
     ):
         """Sets up an instance of this object to be able to connect to a
         minecraft server.
@@ -159,8 +160,8 @@ class Connection(object):
     def _start_network_thread(self):
         with self._write_lock:
             if self.networking_thread is not None and \
-               not self.networking_thread.interrupt or \
-               self.new_networking_thread is not None:
+                    not self.networking_thread.interrupt or \
+                    self.new_networking_thread is not None:
                 raise InvalidState('A networking thread is already running.')
             elif self.networking_thread is None:
                 self.networking_thread = NetworkingThread(self)
@@ -196,6 +197,7 @@ class Connection(object):
         """
         Shorthand decorator to register a function as a packet listener.
         """
+
         def listener_decorator(handler_func):
             self.register_packet_listener(handler_func, *packet_types, **kwds)
             return handler_func
@@ -206,6 +208,7 @@ class Connection(object):
         """
         Shorthand decorator to register a function as an exception handler.
         """
+
         def exception_handler_decorator(handler_func):
             self.register_exception_handler(handler_func, *exc_types, **kwds)
             return handler_func
@@ -388,8 +391,8 @@ class Connection(object):
 
     def _check_connection(self):
         if self.networking_thread is not None and \
-           not self.networking_thread.interrupt or \
-           self.new_networking_thread is not None:
+                not self.networking_thread.interrupt or \
+                self.new_networking_thread is not None:
             raise InvalidState('There is an existing connection.')
 
     def _connect(self):
@@ -409,7 +412,8 @@ class Connection(object):
         # then IPv6, then other address families.
         def key(ai):
             return 0 if ai[0] == socket.AF_INET else \
-                   1 if ai[0] == socket.AF_INET6 else 2
+                1 if ai[0] == socket.AF_INET6 else 2
+
         ai_faml, ai_type, ai_prot, _ai_cnam, ai_addr = min(info, key=key)
 
         self.socket = socket.socket(ai_faml, ai_type, ai_prot)
@@ -499,13 +503,13 @@ class Connection(object):
 
         if server_protocol is None:
             vs = 'version' if server_version is None else \
-                 ('version of %s' % server_version)
+                ('version of %s' % server_version)
         else:
             vs = ('protocol version of %d' % server_protocol) + \
                  ('' if server_version is None else ' (%s)' % server_version)
         ss = 'supported, but not allowed for this connection' \
-             if server_protocol in SUPPORTED_PROTOCOL_VERSIONS \
-             else 'not supported'
+            if server_protocol in SUPPORTED_PROTOCOL_VERSIONS \
+            else 'not supported'
         raise VersionMismatch("Server's %s is %s." % (vs, ss))
 
     def _handle_exit(self):
@@ -629,7 +633,7 @@ class PacketReactor(object):
                 if decompressed_size > 0:
                     decompressor = zlib.decompressobj()
                     decompressed_packet = decompressor.decompress(
-                                                       packet_data.read())
+                        packet_data.read())
                     assert len(decompressed_packet) == decompressed_size, \
                         'decompressed length %d, but expected %d' % \
                         (len(decompressed_packet), decompressed_size)

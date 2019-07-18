@@ -9,7 +9,6 @@
 """
 from .utility import Vector
 
-
 __all__ = (
     'Enum', 'BitFieldEnum', 'AbsoluteHand', 'RelativeHand', 'BlockFace',
     'Difficulty', 'Dimension', 'GameMode', 'OriginPoint'
@@ -33,9 +32,9 @@ class BitFieldEnum(Enum):
         ret_names = []
         ret_value = 0
         for cls_name, cls_value in sorted(
-            [(n, v) for (n, v) in cls.__dict__.items()
-             if isinstance(v, int) and n.isupper() and v | value == value],
-            reverse=True, key=lambda p: p[1]
+                [(n, v) for (n, v) in cls.__dict__.items()
+                 if isinstance(v, int) and n.isupper() and v | value == value],
+                reverse=True, key=lambda p: p[1]
         ):
             if ret_value | cls_value != ret_value or cls_value == value:
                 ret_names.append(cls_name)
@@ -59,11 +58,11 @@ class RelativeHand(Enum):
 # Designation of one of a block's 6 faces.
 class BlockFace(Enum):
     BOTTOM = 0  # -Y
-    TOP = 1     # +Y
-    NORTH = 2   # -Z
-    SOUTH = 3   # +Z
-    WEST = 4    # -X
-    EAST = 5    # +X
+    TOP = 1  # +Y
+    NORTH = 2  # -Z
+    SOUTH = 3  # +Z
+    WEST = 4  # -X
+    EAST = 5  # +X
 
     # A dict mapping Vector tuples to the corresponding BlockFace values.
     # When accessing this dict, plain tuples also match. For example:

@@ -1,6 +1,8 @@
-import requests
 import json
 import uuid
+
+import requests
+
 from .exceptions import YggdrasilError
 
 #: The base url for Ygdrassil requests
@@ -16,6 +18,7 @@ class Profile(object):
     Container class for a MineCraft Selected profile.
     See: `<http://wiki.vg/Authentication>`_
     """
+
     def __init__(self, id_=None, name=None):
         self.id_ = id_
         self.name = name

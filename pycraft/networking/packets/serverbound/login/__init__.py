@@ -22,8 +22,8 @@ class LoginStartPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x00 if context.protocol_version >= 391 else \
-               0x01 if context.protocol_version >= 385 else \
-               0x00
+            0x01 if context.protocol_version >= 385 else \
+                0x00
 
     packet_name = "login start"
     definition = [
@@ -34,8 +34,8 @@ class EncryptionResponsePacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x01 if context.protocol_version >= 391 else \
-               0x02 if context.protocol_version >= 385 else \
-               0x01
+            0x02 if context.protocol_version >= 385 else \
+                0x01
 
     packet_name = "encryption response"
     definition = [
@@ -51,13 +51,13 @@ class PluginResponsePacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x02 if context.protocol_version >= 391 else \
-               0x00
+            0x00
 
     packet_name = 'login plugin response'
     fields = (
         'message_id',  # str
         'successful',  # bool
-        'data',        # bytes, or None if 'successful' is False
+        'data',  # bytes, or None if 'successful' is False
     )
 
     def read(self, file_object):

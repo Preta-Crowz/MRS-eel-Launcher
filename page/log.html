@@ -1,89 +1,95 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>MRS Launcher - Log</title>
-    <script type="text/javascript" src="/eel.js"></script>
-    <script type="text/javascript" src="/jquery.js"></script>
+    <script src="/eel.js" type="text/javascript"></script>
+    <script src="/jquery.js" type="text/javascript"></script>
     <script type="text/javascript">
-      var visDebug = false
-      var visInfo = true
-      var visWarn = true
-      var visError = true
-      var visFatal = true
-      eel.expose(debug)
-      eel.expose(info)
-      eel.expose(warn)
-      eel.expose(error)
-      eel.expose(fatal)
-      function nowtf(){
-        var now = new Date()
-        var H = now.getHours()<10 ? "0"+now.getHours() : ""+now.getHours()
-        var M = now.getMinutes()<10 ? "0"+now.getMinutes() : ""+now.getMinutes()
-        var S = now.getSeconds()<10 ? "0"+now.getSeconds() : ""+now.getSeconds()
-        return H+":"+M+":"+S
-      }
-      function debug(data){
-        console.debug(data)
-        stblock = visDebug ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"D\""+stblock+">[DEBUG|"+nowtf()+"] > " + data + "</p>")
-      }
-      function info(data){
-        console.info(data)
-        stblock = visInfo ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"I\""+stblock+">[INFO|"+nowtf()+"] > " + data + "</p>")
-      }
-      function warn(data){
-        console.warn(data)
-        stblock = visWarn ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"W\""+stblock+">[WARN|"+nowtf()+"] > " + data + "</p>")
-      }
-      function error(data){
-        console.error(data)
-        stblock = visError ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"E\""+stblock+">[ERROR|"+nowtf()+"] > " + data + "</p>")
-      }
-      function fatal(data){
-        console.error(data)
-        stblock = visFatal ? "" : " style=\"display: none;\""
-        $("#logs").append("<p class=\"F\""+stblock+">[FATAL|"+nowtf()+"] > " + data + "</p>")
-      }
+        var visDebug = false
+        var visInfo = true
+        var visWarn = true
+        var visError = true
+        var visFatal = true
+        eel.expose(debug)
+        eel.expose(info)
+        eel.expose(warn)
+        eel.expose(error)
+        eel.expose(fatal)
+
+        function nowtf() {
+            var now = new Date()
+            var H = now.getHours() < 10 ? "0" + now.getHours() : "" + now.getHours()
+            var M = now.getMinutes() < 10 ? "0" + now.getMinutes() : "" + now.getMinutes()
+            var S = now.getSeconds() < 10 ? "0" + now.getSeconds() : "" + now.getSeconds()
+            return H + ":" + M + ":" + S
+        }
+
+        function debug(data) {
+            console.debug(data)
+            stblock = visDebug ? "" : " style=\"display: none;\""
+            $("#logs").append("<p class=\"D\"" + stblock + ">[DEBUG|" + nowtf() + "] > " + data + "</p>")
+        }
+
+        function info(data) {
+            console.info(data)
+            stblock = visInfo ? "" : " style=\"display: none;\""
+            $("#logs").append("<p class=\"I\"" + stblock + ">[INFO|" + nowtf() + "] > " + data + "</p>")
+        }
+
+        function warn(data) {
+            console.warn(data)
+            stblock = visWarn ? "" : " style=\"display: none;\""
+            $("#logs").append("<p class=\"W\"" + stblock + ">[WARN|" + nowtf() + "] > " + data + "</p>")
+        }
+
+        function error(data) {
+            console.error(data)
+            stblock = visError ? "" : " style=\"display: none;\""
+            $("#logs").append("<p class=\"E\"" + stblock + ">[ERROR|" + nowtf() + "] > " + data + "</p>")
+        }
+
+        function fatal(data) {
+            console.error(data)
+            stblock = visFatal ? "" : " style=\"display: none;\""
+            $("#logs").append("<p class=\"F\"" + stblock + ">[FATAL|" + nowtf() + "] > " + data + "</p>")
+        }
 
     </script>
-  </head>
-  <body>
-    <label for="visDebug">Debug</label>
-    <input type="checkbox" id="visDebug" name="visDebug" />
-    <label for="visInfo">Info</label>
-    <input type="checkbox" id="visInfo" name="visInfo" checked="checked" />
-    <label for="visWarn">Warning</label>
-    <input type="checkbox" id="visWarn" name="visWarn" checked="checked" />
-    <label for="visError">Error</label>
-    <input type="checkbox" id="visError" name="visError" checked="checked" />
-    <label for="visFatal">Fatal</label>
-    <input type="checkbox" id="visFatal" name="visFatal" checked="checked" />
-    <content id="logs"></content>
-    <script type="text/javascript">
-      $("#visDebug").on('click', function() {
+</head>
+<body>
+<label for="visDebug">Debug</label>
+<input id="visDebug" name="visDebug" type="checkbox"/>
+<label for="visInfo">Info</label>
+<input checked="checked" id="visInfo" name="visInfo" type="checkbox"/>
+<label for="visWarn">Warning</label>
+<input checked="checked" id="visWarn" name="visWarn" type="checkbox"/>
+<label for="visError">Error</label>
+<input checked="checked" id="visError" name="visError" type="checkbox"/>
+<label for="visFatal">Fatal</label>
+<input checked="checked" id="visFatal" name="visFatal" type="checkbox"/>
+<content id="logs"></content>
+<script type="text/javascript">
+    $("#visDebug").on('click', function () {
         visDebug = !visDebug
         $(".D").toggle()
-      })
-      $("#visInfo").on('click', function() {
+    })
+    $("#visInfo").on('click', function () {
         visInfo = !visInfo
         $(".I").toggle()
-      })
-      $("#visWarn").on('click', function() {
+    })
+    $("#visWarn").on('click', function () {
         visWarn = !visWarn
         $(".W").toggle()
-      })
-      $("#visError").on('click', function() {
+    })
+    $("#visError").on('click', function () {
         visError = !visError
         $(".E").toggle()
-      })
-      $("#visFatal").on('click', function() {
+    })
+    $("#visFatal").on('click', function () {
         visFatal = !visFatal
         $(".F").toggle()
-      })
-      eel.info("Start Logging")
-    </script>
-  </body>
+    })
+    eel.info("Start Logging")
+</script>
+</body>
 </html>

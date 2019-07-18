@@ -9,11 +9,11 @@ class MapPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x26 if context.protocol_version >= 389 else \
-               0x25 if context.protocol_version >= 345 else \
-               0x24 if context.protocol_version >= 334 else \
-               0x25 if context.protocol_version >= 318 else \
-               0x24 if context.protocol_version >= 107 else \
-               0x34
+            0x25 if context.protocol_version >= 345 else \
+                0x24 if context.protocol_version >= 334 else \
+                    0x25 if context.protocol_version >= 318 else \
+                        0x24 if context.protocol_version >= 107 else \
+                            0x34
 
     packet_name = 'map'
 
@@ -50,7 +50,7 @@ class MapPacket(Packet):
             self.icons = []
             self.width = width
             self.height = height
-            self.pixels = bytearray(0 for i in range(width*height))
+            self.pixels = bytearray(0 for i in range(width * height))
             self.is_tracking_position = True
             self.is_locked = False
 

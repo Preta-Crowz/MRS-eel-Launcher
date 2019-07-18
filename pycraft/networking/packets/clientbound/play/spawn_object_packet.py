@@ -1,17 +1,16 @@
 from minecraft.networking.packets import Packet
-from minecraft.networking.types.utility import descriptor
-
 from minecraft.networking.types import (
     VarInt, UUID, Byte, Double, Integer, Angle, Short, Enum, Vector,
     Direction, PositionAndLook, attribute_alias, multi_attribute_alias,
 )
+from minecraft.networking.types.utility import descriptor
 
 
 class SpawnObjectPacket(Packet):
     @staticmethod
     def get_id(context):
         return 0x00 if context.protocol_version >= 67 else \
-               0x0E
+            0x0E
 
     packet_name = 'spawn object'
 
@@ -49,42 +48,42 @@ class SpawnObjectPacket(Packet):
             return getattr(cls, name)
 
         class EntityType(Enum):
-            ACTIVATED_TNT     = 50 if pv < 458 else 55  # PrimedTnt
-            AREA_EFFECT_CLOUD =  3 if pv < 458 else  0
-            ARMORSTAND        = 78 if pv < 458 else  1
-            ARROW             = 60 if pv < 458 else  2
-            BOAT              =  1 if pv < 458 else  5
-            DRAGON_FIREBALL   = 93 if pv < 458 else 13
-            EGG               = 62 if pv < 458 else 74  # ThrownEgg
-            ENDERCRYSTAL      = 51 if pv < 458 else 16
-            ENDERPEARL        = 65 if pv < 458 else 75  # ThrownEnderpearl
-            EVOCATION_FANGS   = 79 if pv < 458 else 20
-            EXP_BOTTLE        = 75 if pv < 458 else 76  # ThrownExpBottle
-            EYE_OF_ENDER      = 72 if pv < 458 else 23  # EyeOfEnderSignal
-            FALLING_OBJECT    = 70 if pv < 458 else 24  # FallingSand
-            FIREBALL          = 63 if pv < 458 else 34  # Fireball (ghast)
-            FIRECHARGE        = 64 if pv < 458 else 65  # SmallFireball (blaze)
-            FIREWORK_ROCKET   = 76 if pv < 458 else 25  # FireworksRocketEntity
-            FISHING_HOOK      = 90 if pv < 458 else 93  # Fishing bobber
-            ITEM_FRAMES       = 71 if pv < 458 else 33  # ItemFrame
-            ITEM_STACK        =  2 if pv < 458 else 32  # Item
-            LEASH_KNOT        = 77 if pv < 458 else 35
-            LLAMA_SPIT        = 68 if pv < 458 else 37
-            MINECART          = 10 if pv < 458 else 39  # MinecartRideable
-            POTION            = 73 if pv < 458 else 77  # ThrownPotion
-            SHULKER_BULLET    = 67 if pv < 458 else 60
-            SNOWBALL          = 61 if pv < 458 else 67
-            SPECTRAL_ARROW    = 91 if pv < 458 else 68
-            WITHER_SKULL      = 66 if pv < 458 else 85
+            ACTIVATED_TNT = 50 if pv < 458 else 55  # PrimedTnt
+            AREA_EFFECT_CLOUD = 3 if pv < 458 else 0
+            ARMORSTAND = 78 if pv < 458 else 1
+            ARROW = 60 if pv < 458 else 2
+            BOAT = 1 if pv < 458 else 5
+            DRAGON_FIREBALL = 93 if pv < 458 else 13
+            EGG = 62 if pv < 458 else 74  # ThrownEgg
+            ENDERCRYSTAL = 51 if pv < 458 else 16
+            ENDERPEARL = 65 if pv < 458 else 75  # ThrownEnderpearl
+            EVOCATION_FANGS = 79 if pv < 458 else 20
+            EXP_BOTTLE = 75 if pv < 458 else 76  # ThrownExpBottle
+            EYE_OF_ENDER = 72 if pv < 458 else 23  # EyeOfEnderSignal
+            FALLING_OBJECT = 70 if pv < 458 else 24  # FallingSand
+            FIREBALL = 63 if pv < 458 else 34  # Fireball (ghast)
+            FIRECHARGE = 64 if pv < 458 else 65  # SmallFireball (blaze)
+            FIREWORK_ROCKET = 76 if pv < 458 else 25  # FireworksRocketEntity
+            FISHING_HOOK = 90 if pv < 458 else 93  # Fishing bobber
+            ITEM_FRAMES = 71 if pv < 458 else 33  # ItemFrame
+            ITEM_STACK = 2 if pv < 458 else 32  # Item
+            LEASH_KNOT = 77 if pv < 458 else 35
+            LLAMA_SPIT = 68 if pv < 458 else 37
+            MINECART = 10 if pv < 458 else 39  # MinecartRideable
+            POTION = 73 if pv < 458 else 77  # ThrownPotion
+            SHULKER_BULLET = 67 if pv < 458 else 60
+            SNOWBALL = 61 if pv < 458 else 67
+            SPECTRAL_ARROW = 91 if pv < 458 else 68
+            WITHER_SKULL = 66 if pv < 458 else 85
             if pv >= 393:
                 TRIDENT = 94
             if pv >= 458:
-                MINECART_CHEST =         40
+                MINECART_CHEST = 40
                 MINECART_COMMAND_BLOCK = 41
-                MINECART_FURNACE =       42
-                MINECART_HOPPER =        43
-                MINECART_SPAWNER =       44
-                MINECART_TNT =           45
+                MINECART_FURNACE = 42
+                MINECART_HOPPER = 43
+                MINECART_SPAWNER = 44
+                MINECART_TNT = 45
 
         setattr(cls, name, EntityType)
         return EntityType

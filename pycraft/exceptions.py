@@ -15,12 +15,12 @@ class YggdrasilError(Exception):
     """
 
     def __init__(
-        self,
-        message=None,
-        status_code=None,
-        yggdrasil_error=None,
-        yggdrasil_message=None,
-        yggdrasil_cause=None,
+            self,
+            message=None,
+            status_code=None,
+            yggdrasil_error=None,
+            yggdrasil_message=None,
+            yggdrasil_cause=None,
     ):
         super(YggdrasilError, self).__init__(message)
         self.status_code = status_code
