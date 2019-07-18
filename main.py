@@ -15,6 +15,7 @@ import pycraft
 import pycraft.exceptions as pex
 from pycraft import authentication
 
+import setup
 logger = logging.Logger("MRS")
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-', '')
@@ -35,7 +36,7 @@ rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
 currToken = False
 
-baseDir = os.path.dirname(os.path.realpath(__file__)) + '/'
+baseDir = os.path.dirname(os.path.realpath(__file__))
 launcher = {
     'name': 'MRS Minecraft Launcher',
     'cn': 'ZERO',
@@ -48,14 +49,14 @@ launcher = {
     },
     'path': {
         'main': baseDir,
-        'game': os.path.normpath(baseDir + './games/'),
-        'java': os.path.normpath(baseDir + './runtime/'),
-        'license': os.path.normpath(baseDir + './LICENSE'),
-        'updater': os.path.normpath(baseDir + './updater.py'),
-        'data': os.path.normpath(baseDir + './data/'),
-        'mclib': os.path.normpath(baseDir + './lib/'),
-        'mcver': os.path.normpath(baseDir + './versions/'),
-        'assets': os.path.normpath(baseDir + './assets/')
+        'game': os.path.normpath(baseDir + '/games'),
+        'java': os.path.normpath(baseDir + '/runtime'),
+        'license': os.path.normpath(baseDir + '/LICENSE'),
+        'updater': os.path.normpath(baseDir + '/updater.py'),
+        'data': os.path.normpath(baseDir + '/data'),
+        'mclib': os.path.normpath(baseDir + '/lib'),
+        'mcver': os.path.normpath(baseDir + '/versions'),
+        'assets': os.path.normpath(baseDir + '/assets')
     },
     'url': {
         'list': 'https://api.mysticrs.tk/list',
@@ -218,6 +219,38 @@ def logOutput(pipe):
             continue
         else:
             debug(lastOutput)
+
+def loadFromWeb(url):
+    return json.loads(requests.get(url).text)
+
+def getBaseVer(forgedVersion):
+    return forgedVersion.split("-")[0]
+
+def getVerData(version):
+    urlData = loadFromWeb("https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/"+version+"/version.json")
+    return loadFromWeb(urlData["url"])
+
+def loadVerData(version):
+    fn = os.path.normpath(getLauncher()["path"]["assets"]+"/basedatas/"+version+".json")
+    if os.path.exists(fn):
+        return json.load(open(fn,"r"))
+    else:
+        data = getVerData(version)
+        saveToFile(fn, data)
+        return data
+
+def saveToFile(fdir,data):
+    if type(data) == dict:
+        data = json.dumps(data)
+    return open(fdir, "wb").write(data.encode("utf8"))
+
+def download(fdir,url):
+    return saveToFile(fdir, requests.get(url).content)
+
+def downloadAssets(version):
+    baseData = loadVerData(version)
+    vid = baseData["assetIndex"]["id"]
+    download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
 
 
 @eel.expose
