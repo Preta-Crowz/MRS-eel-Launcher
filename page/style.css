@@ -56,6 +56,13 @@ body {
     transition: 0.25s;
     cursor: pointer;
 }
+.box a {
+    text-decoration: none;
+    color: aqua;
+}
+.box a:hover {
+    text-decoration: underline;
+}
 
 .box input[type = "button"]:hover {
     background: #2ecc71;

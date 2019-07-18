@@ -23,15 +23,16 @@
     <input id="id" name="id" placeholder="Username" type="text">
     <input id="password" name="password" placeholder="Password" type="password">
     <input form="lform" id="login" name="login" type="button" value="Login">
+    <a href="https://account.mojang.com/password">비밀번호를 잊으셨나요?</a>
 </form>
 <script type="text/javascript">
     $("#login").on("click", function (event) {
         var token = eel.login($("#id").val(), $("#password").val())(saveToken)
     })
 </script>
-<form action="https://account.mojang.com/password" method="get">
+<!--<form action="https://account.mojang.com/password" method="get">
     <input type="submit" value="비밀번호 찾기">
-</form>
+</form>-->
 
 </body>
 </html>
