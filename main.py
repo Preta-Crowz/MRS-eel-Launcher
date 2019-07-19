@@ -260,7 +260,10 @@ def loadVerData(version):
 def saveToFile(fdir,data):
     if type(data) == dict:
         data = json.dumps(data)
-    return open(fdir, "wb").write(data.encode("utf8"))
+    elif type(data) == str:
+        data = data.encode("utf8")
+    else: raise TypeError("Unsupported Type:"+type(data))
+    return open(fdir, "wb").write(data)
 
 def download(fdir,url):
     return saveToFile(fdir, requests.get(url).content)
