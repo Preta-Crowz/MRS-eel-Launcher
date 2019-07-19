@@ -5,6 +5,7 @@
 <form id="lform">
     <input id="ver" name="ver" placeholder="Version" type="text">
     <button form="lform" id="launch" name="launch" type="button">테스트 실행</button>
+    <button form="lform" id="logout" name="logout" type="button">로그아웃</button>
 </form>
 <script type="text/javascript">
     eel.expose(getToken)
@@ -17,5 +18,13 @@
         return eel.launch($("#ver").val(), $.cookie("name"))((n) => {
             return n
         })
+    })
+    $("#logout").on("click", function (event) {
+        $.removeCookie("save")
+        $.removeCookie("name")
+        $.removeCookie("client")
+        $.removeCookie("access")
+        $.cookie("save", "n", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
+        window.location.href = "/login.html"
     })
 </script>
