@@ -270,7 +270,7 @@ def downloadAssets(version):
     vid = baseData["assetIndex"]["id"]
     download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
 
-def mcArugments(version):
+def mcArguments(version):
     data = loadVerData(version)
     if "minecraftArguments" in data.keys():
         args = data["minecraftArguments"]
@@ -313,7 +313,7 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "net.minecraft.client.main.Main",
-        mcArugments(version).format(auth_player_name=name, version_name=version,
+        mcArguments(version).format(auth_player_name=name, version_name=version,
             game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=version.split(".")[0] + "." + version.split(".")[1],
