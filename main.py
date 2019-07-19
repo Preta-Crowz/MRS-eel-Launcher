@@ -287,7 +287,7 @@ def mcArugments(version):
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
     if not modpack:
-        if re.match("\d\dw\d\d.", version) or re.match("1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?"):
+        if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?", version):
             modpack = "Snapshot " + version
             vtype = "snapshot"
         else:
