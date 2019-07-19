@@ -280,7 +280,6 @@ def mcArguments(version):
         for arg in args:
             if type(arg) == str:
                 r.append(arg)
-        debug(args)
         args = " ".join(r)
     return args.replace("$","")
 
