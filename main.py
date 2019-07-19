@@ -268,12 +268,12 @@ def download(fdir,url):
 def downloadAssetsIndex(version):
     baseData = loadVerData(version)
     vid = baseData["assetIndex"]["id"]
-    return download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
+    return download(os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
 
 def assetsIndexExist(version):
     baseData = loadVerData(version)
     vid = baseData["assetIndex"]["id"]
-    return os.path.exists(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"))
+    return os.path.exists(os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json"))
 
 def mcArguments(version):
     data = loadVerData(version)
