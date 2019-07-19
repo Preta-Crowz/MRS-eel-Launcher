@@ -298,7 +298,7 @@ def launch(version, name, modpack=False, memory=1):
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
-        "-XstartOnFirstThread"
+        "-XstartOnFirstThread",
         "-XX:HeapDumpPath=minecraft.heapdump",
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/temp"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
