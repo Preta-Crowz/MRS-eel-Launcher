@@ -262,7 +262,10 @@ def saveToFile(fdir,data):
         data = json.dumps(data)
     elif type(data) == str:
         data = data.encode("utf8")
-    else: raise TypeError("Unsupported Type")
+    elif type(data) == bytes:
+        pass
+    else:
+        raise TypeError("Unsupported Type")
     return open(fdir, "wb").write(data)
 
 def download(fdir,url):
