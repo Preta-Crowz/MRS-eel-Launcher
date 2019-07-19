@@ -319,6 +319,7 @@ def launch(version, name, modpack=False, memory=1):
             assets_index_name=version.split(".")[0] + "." + version.split(".")[1],
             auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype)
     ])
+    debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
@@ -326,5 +327,4 @@ def launch(version, name, modpack=False, memory=1):
         logOutput(gameLog)
     if mc.returncode:
         warn(f"Client returned {mc.returncode}!")
-        debug(cmd)
     return mc.returncode
