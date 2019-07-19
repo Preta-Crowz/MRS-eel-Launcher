@@ -277,7 +277,7 @@ def mcArguments(version):
     elif "arguments" in data.keys():
         args = data["arguments"]["game"]
         r = []
-        for arg in args.values():
+        for arg in args:
             if type(arg) == str:
                 r.append(arg)
         debug(args)
