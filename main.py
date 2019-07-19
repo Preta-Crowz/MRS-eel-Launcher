@@ -280,7 +280,7 @@ def mcArugments(version):
         for arg in args.values():
             if type(arg) == str:
                 r.append(arg)
-        args = r.join(" ")
+        args = " ".join(r)
     return args.replace("$","")
 
 
