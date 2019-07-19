@@ -265,10 +265,15 @@ def saveToFile(fdir,data):
 def download(fdir,url):
     return saveToFile(fdir, requests.get(url).content)
 
-def downloadAssets(version):
+def downloadAssetsIndex(version):
     baseData = loadVerData(version)
     vid = baseData["assetIndex"]["id"]
-    download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
+    return download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
+
+def assetsIndexExist(version)
+    baseData = loadVerData(version)
+    vid = baseData["assetIndex"]["id"]
+    return os.path.exists(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"))
 
 def mcArguments(version):
     data = loadVerData(version)
@@ -283,6 +288,12 @@ def mcArguments(version):
         args = " ".join(r)
     return args.replace("$","")
 
+def assetsCheck(version):
+    return True # temp
+
+def downloadAssets(version):
+    return True # temp
+
 
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
@@ -290,11 +301,18 @@ def launch(version, name, modpack=False, memory=1):
         if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?", version):
             modpack = "Snapshot " + version
             vtype = "snapshot"
+            vver = version
         else:
             modpack = "Vanilla " + version
             vtype = "release"
+            vver = version
     else:
         vtype = "Forge"
+        vver = version.split("-")[0]
+    if not assetsIndexExist(vver):
+        downloadAssetsIndex(vver)
+    if not assetsCheck(vver):
+        downloadAssets(vver)
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
