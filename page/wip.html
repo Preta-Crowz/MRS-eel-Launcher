@@ -3,6 +3,7 @@
 <script src="/jquery.cookie.js" type="text/javascript"></script>
 <p>This launcher is work in progress now.</p>
 <form id="lform">
+    <input id="ver" name="ver" placeholder="Version" type="text">
     <button form="lform" id="launch" name="launch" type="button">테스트 실행</button>
 </form>
 <script type="text/javascript">
@@ -13,7 +14,7 @@
     }
 
     $("#launch").on("click", function (event) {
-        return eel.launch("1.14.3", $.cookie("name"))((n) => {
+        return eel.launch($("#ver").val(), $.cookie("name"))((n) => {
             return n
         })
     })

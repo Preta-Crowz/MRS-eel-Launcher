@@ -270,13 +270,35 @@ def downloadAssets(version):
     vid = baseData["assetIndex"]["id"]
     download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
 
+def mcArugments(version):
+    data = loadVerData(version)
+    if "minecraftArguments" in data.keys():
+        args = data["minecraftArguments"]
+    elif "arguments" in data.keys():
+        args = data["arguments"]
+        r = []
+        for arg in args.values():
+            if type(arg) == str:
+                r.append(arg)
+        args = r.join(" ")
+    return args.replace("$","")
+
 
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
-    if not modpack: modpack = "Vanilla " + version
+    if not modpack:
+        if re.match("\d\dw\d\d.", version) or re.match("1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?"):
+            modpack = "Snapshot " + version
+            vtype = "snapshot"
+        else:
+            modpack = "Vanilla " + version
+            vtype = "release"
+    else:
+        vtype = "Forge"
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
+        "-XstartOnFirstThread"
         "-XX:HeapDumpPath=minecraft.heapdump",
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/temp"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
@@ -292,24 +314,11 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "net.minecraft.client.main.Main",
-        "--username",
-        name,
-        "--version",
-        version,
-        "--gameDir",
-        os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
-        "--assetsDir",
-        getLauncher()["path"]["assets"],
-        "--assetIndex",
-        version.split(".")[0] + "." + version.split(".")[1],
-        "--uuid",
-        getuuid(name),
-        "--accessToken",
-        currToken,
-        "--userType",
-        "mojang",
-        "--versionType",
-        "release"
+        mcArugments(version).format(auth_player_name=name, version_name=version,
+            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
+            assets_root=getLauncher()["path"]["assets"],
+            assets_index_name=version.split(".")[0] + "." + version.split(".")[1],
+            auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype)
     ])
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
