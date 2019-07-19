@@ -275,11 +275,12 @@ def mcArguments(version):
     if "minecraftArguments" in data.keys():
         args = data["minecraftArguments"]
     elif "arguments" in data.keys():
-        args = data["arguments"]
+        args = data["arguments"]["game"]
         r = []
         for arg in args.values():
             if type(arg) == str:
                 r.append(arg)
+        debug(args)
         args = " ".join(r)
     return args.replace("$","")
 
