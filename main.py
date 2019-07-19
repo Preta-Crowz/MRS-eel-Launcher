@@ -298,8 +298,7 @@ def launch(version, name, modpack=False, memory=1):
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
-        "-XstartOnFirstThread",
-        "-XX:HeapDumpPath=minecraft.heapdump",
+        "-XX:HeapDumpPath=minecraft.heapdump" if platform.system() == "Windows" else "-XstartOnFirstThread",
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/temp"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
@@ -326,6 +325,6 @@ def launch(version, name, modpack=False, memory=1):
     with mc.stdout as gameLog:
         logOutput(gameLog)
     if mc.returncode:
-        fatal(f"Client returned {mc.returncode}!")
+        warn(f"Client returned {mc.returncode}!")
         debug(cmd)
     return mc.returncode
