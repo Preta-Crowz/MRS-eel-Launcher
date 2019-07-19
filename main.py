@@ -270,7 +270,7 @@ def downloadAssetsIndex(version):
     vid = baseData["assetIndex"]["id"]
     return download(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
 
-def assetsIndexExist(version)
+def assetsIndexExist(version):
     baseData = loadVerData(version)
     vid = baseData["assetIndex"]["id"]
     return os.path.exists(os.path.normpath(getLauncher["path"]["assets"]+"/indexes/"+vid+".json"))
@@ -309,8 +309,10 @@ def launch(version, name, modpack=False, memory=1):
     else:
         vtype = "Forge"
         vver = version.split("-")[0]
+
     if not assetsIndexExist(vver):
         downloadAssetsIndex(vver)
+
     if not assetsCheck(vver):
         downloadAssets(vver)
     info("Launching " + modpack + "!")
