@@ -185,8 +185,11 @@ def getLibs(version):
 def getJava():
     javaw = os.path.normpath(getLauncher()["path"]["java"] + "/bin/javaw")
     if platform.system() == "Windows":
-        return javaw + ".exe"
+        return javaw + ".exe -XX:HeapDumpPath=minecraft.heapdump"
+    elif platform.system() == "Darwin":
+        return javaw + " -XstartOnFirstThread"
     return javaw
+    
 
 
 nextLog = False
@@ -324,7 +327,6 @@ def launch(version, name, modpack=False, memory=1):
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
-        "-XX:HeapDumpPath=minecraft.heapdump" if platform.system() == "Windows" else "-XstartOnFirstThread",
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/temp"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
