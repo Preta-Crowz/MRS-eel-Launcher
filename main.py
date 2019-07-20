@@ -10,6 +10,7 @@ import requests
 import subprocess
 import threading
 import time
+import zipfile
 
 import pycraft
 import pycraft.exceptions as pex
@@ -180,7 +181,10 @@ def getLibs(version):
     data = json.load(f)
     libs = []
     for lib in data["libraries"]:
-        libs.append(libDir(lib["downloads"]["artifact"]))
+        try:
+            libs.append(libDir(lib["downloads"]["artifact"]))
+        except:
+            pass
     return ";".join(libs)
 
 
@@ -351,12 +355,16 @@ def downloadJar(version):
 def libCheck(version):
     index = loadVerData(version)["libraries"]
     for o in index:
-        path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        try:
+            path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        except:
+            continue
         if not os.path.exists(path):
             return False
         if "classifiers" in o["downloads"].keys():
             if "natives-"+osType() in o["downloads"]["classifiers"].keys():
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
+                extract(path)
                 if not os.path.exists(path):
                     return False
             
@@ -367,12 +375,18 @@ def downloadLibs(version):
     count = len(index)
     now = 1
     for o in index:
-        path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        try:
+            path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        except:
+            error("Failed to download lib :" + o["name"])
+            warn("Game will be launch unstable!")
+            continue
         if not os.path.exists(path):
             info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
             url = o["downloads"]["artifact"]["url"]
             download(path, url)
         if "classifiers" in o["downloads"].keys():
+            debug(o["downloads"]["classifiers"])
             if "natives-"+osType() in o["downloads"]["classifiers"].keys():
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
                 url = o["downloads"]["classifiers"]["natives-"+osType()]["url"]
@@ -388,6 +402,11 @@ def osType():
         return "osx"
     else:
         return "linux"
+
+def extract(nativeFile):
+    zf = zipfile.ZipFile(nativeFile)
+    zf.extractall(os.path.normpath(getLauncher()["path"]["main"] + "/extracts"))
+    zf.close()
 
 
 @eel.expose
@@ -425,7 +444,7 @@ def launch(version, name, modpack=False, memory=1):
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
-        "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/temp"),
+        "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
         "-cp",
@@ -442,8 +461,9 @@ def launch(version, name, modpack=False, memory=1):
         mcArguments(version).format(auth_player_name=name, version_name=version,
             game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
             assets_root=getLauncher()["path"]["assets"],
-            assets_index_name=version.split(".")[0] + "." + version.split(".")[1],
-            auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype)
+            assets_index_name=getVerData(version)["assets"],
+            auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype,
+            user_properties="{}")
     ])
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

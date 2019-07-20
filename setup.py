@@ -9,6 +9,7 @@ def hashLoop(d):
     return r
 
 dirs = [
+    os.path.normpath(baseDir+'/extracts'),
     os.path.normpath(baseDir+'/games'),
     os.path.normpath(baseDir+'/runtime'),
     os.path.normpath(baseDir+'/data'),
