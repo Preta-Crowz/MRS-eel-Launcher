@@ -386,7 +386,6 @@ def downloadLibs(version):
             url = o["downloads"]["artifact"]["url"]
             download(path, url)
         if "classifiers" in o["downloads"].keys():
-            debug(o["downloads"]["classifiers"])
             if "natives-"+osType() in o["downloads"]["classifiers"].keys():
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
                 url = o["downloads"]["classifiers"]["natives-"+osType()]["url"]
