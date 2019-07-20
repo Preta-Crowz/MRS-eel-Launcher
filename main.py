@@ -316,7 +316,7 @@ def assetsCheck(version):
 
 def downloadAssets(version):
     index = loadAssetsIndex(version)["objects"]
-    count = len(list(index.keys()))
+    count = len(list(index.keys())) - 1
     now = 1
     for k in index:
         fh = index[k]["hash"]
