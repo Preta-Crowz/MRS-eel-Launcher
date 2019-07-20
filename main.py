@@ -274,6 +274,14 @@ def saveToFile(fdir,data):
 def download(fdir,url):
     return saveToFile(fdir, requests.get(url).content)
 
+def loadAssetsIndex(version):
+    baseData = loadVerData(version)
+    vid = baseData["assetIndex"]["id"]
+    path = os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json")
+    if not os.path.exists(path):
+        downloadAssetsIndex(version)
+    return json.load(open(path))
+
 def downloadAssetsIndex(version):
     baseData = loadVerData(version)
     vid = baseData["assetIndex"]["id"]
@@ -298,10 +306,23 @@ def mcArguments(version):
     return args.replace("$","")
 
 def assetsCheck(version):
-    return True # temp
+    index = loadAssetsIndex(version)["objects"]
+    for k in index:
+        fh = index[k]["hash"]
+        path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
+        if not os.path.exists(path):
+            return False
+    return True
 
 def downloadAssets(version):
-    return True # temp
+    index = loadAssetsIndex(version)["objects"]
+    for k in index:
+        fh = index[k]["hash"]
+        path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
+        if not os.path.exists(path):
+            info("Downloading "+k)
+            url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
+            download(path, url)
 
 
 @eel.expose
@@ -320,9 +341,11 @@ def launch(version, name, modpack=False, memory=1):
         vver = version.split("-")[0]
 
     if not assetsIndexExist(vver):
+        warn("Assets Index not found! Downloading new index..")
         downloadAssetsIndex(vver)
 
     if not assetsCheck(vver):
+        warn("Some assets not found! Downloading new Assets..")
         downloadAssets(vver)
     info("Launching " + modpack + "!")
     cmd = " ".join([
