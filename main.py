@@ -164,13 +164,15 @@ def getuuid(name):
     return json.loads(r)["id"]
 
 
-def libDir(name):
-    l = name.split(":")
-    l[0] = l[0].replace(".", "/")
-    if l[1].startswith("lwjgl") and platform.system() == "Windows":
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/{0}/{1}/{2}/{1}-{2}.jar".format(*l)) + ";" + \
-               os.path.normpath(getLauncher()["path"]["mclib"] + "/{0}/{1}/{2}/{1}-{2}-natives-windows.jar".format(*l))
-    return os.path.normpath(getLauncher()["path"]["mclib"] + "/{0}/{1}/{2}/{1}-{2}.jar".format(*l))
+def libDir(o):
+    path = o["path"]
+    if path.find("lwjgl") + 1:
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+               os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
+    elif path.find("java-objc-bridge") + 1 and osType == "osx":
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+               os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
+    return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path)
 
 
 def getLibs(version):
@@ -178,7 +180,7 @@ def getLibs(version):
     data = json.load(f)
     libs = []
     for lib in data["libraries"]:
-        libs.append(libDir(lib["name"]))
+        libs.append(libDir(lib["downloads"]["artifact"]))
     return ";".join(libs)
 
 
@@ -269,7 +271,17 @@ def saveToFile(fdir,data):
         pass
     else:
         raise TypeError("Unsupported Type")
+    mkLoop(os.path.dirname(fdir))
     return open(fdir, "wb").write(data)
+
+def mkLoop(fdir):
+    if os.path.exists(fdir):
+        return
+    try:
+        os.mkdir(fdir)
+    except:
+        mkLoop(os.path.dirname(fdir))
+        os.mkdir(fdir)
 
 def download(fdir,url):
     return saveToFile(fdir, requests.get(url).content)
@@ -316,16 +328,16 @@ def assetsCheck(version):
 
 def downloadAssets(version):
     index = loadAssetsIndex(version)["objects"]
-    count = len(list(index.keys())) - 1
+    count = len(list(index.keys()))
     now = 1
     for k in index:
         fh = index[k]["hash"]
-        now += 1
         path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
         if not os.path.exists(path):
             info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
             url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
             download(path, url)
+        now += 1
 
 def jarExists(version):
     path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
@@ -335,7 +347,47 @@ def downloadJar(version):
     path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
     url = loadVerData(version)["downloads"]["client"]["url"]
     download(path, url)
+
+def libCheck(version):
+    index = loadVerData(version)["libraries"]
+    for o in index:
+        path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        if not os.path.exists(path):
+            return False
+        if "classifiers" in o["downloads"].keys():
+            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
+                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
+                if not os.path.exists(path):
+                    return False
+            
+    return True
+
+def downloadLibs(version):
+    index = loadVerData(version)["libraries"]
+    count = len(index)
+    now = 1
+    for o in index:
+        path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
+        if not os.path.exists(path):
+            info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
+            url = o["downloads"]["artifact"]["url"]
+            download(path, url)
+        if "classifiers" in o["downloads"].keys():
+            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
+                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
+                url = o["downloads"]["classifiers"]["natives-"+osType()]["url"]
+                if not os.path.exists(path):
+                    download(path, url)
+        now += 1
     
+def osType():
+    base = platform.system()
+    if base == "Windows":
+        return "windows"
+    elif base == "Darwin":
+        return "osx"
+    else:
+        return "linux"
 
 
 @eel.expose
@@ -362,8 +414,14 @@ def launch(version, name, modpack=False, memory=1):
         downloadAssetsIndex(vver)
 
     if not assetsCheck(vver):
-        warn("Some assets not found! Downloading new Assets..")
+        warn("Some assets not found! Downloading new assets..")
         downloadAssets(vver)
+
+    if not libCheck(vver):
+        warn("Some libraries not found! Downloading new libraries..")
+        downloadLibs(vver)
+
+
     info("Launching " + modpack + "!")
     cmd = " ".join([
         getJava(),
@@ -371,7 +429,7 @@ def launch(version, name, modpack=False, memory=1):
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
         "-cp",
-        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + version + ".jar"),
+        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "-Xmx" + str(memory * 1024) + "M",
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseG1GC",
