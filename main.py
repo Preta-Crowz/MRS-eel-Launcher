@@ -316,11 +316,14 @@ def assetsCheck(version):
 
 def downloadAssets(version):
     index = loadAssetsIndex(version)["objects"]
+    count = len(list(index.keys()))
+    now = 1
     for k in index:
         fh = index[k]["hash"]
+        now += 1
         path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
         if not os.path.exists(path):
-            info("Downloading "+k)
+            info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
             url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
             download(path, url)
 
