@@ -1,2 +1,2 @@
 pypresence
-https://github.com/ChrisKnott/Eel
+https://github.com/ChrisKnott/Eel/archive/master.zip
