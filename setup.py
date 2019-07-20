@@ -15,7 +15,6 @@ dirs = [
     os.path.normpath(baseDir+'/lib'),
     os.path.normpath(baseDir+'/versions'),
     os.path.normpath(baseDir+'/assets'),
-    os.path.normpath(baseDir+'/assets/basedatas'),
     os.path.normpath(baseDir+'/assets/indexes'),
     os.path.normpath(baseDir+'/assets/objects'),
     os.path.normpath(baseDir+'/assets/skins'),

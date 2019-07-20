@@ -252,7 +252,7 @@ def getVerData(version):
     return loadFromWeb(urlData["url"])
 
 def loadVerData(version):
-    fn = os.path.normpath(getLauncher()["path"]["assets"]+"/basedatas/"+version+".json")
+    fn = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".json")
     if os.path.exists(fn):
         return json.load(open(fn,"r"))
     else:
@@ -262,7 +262,7 @@ def loadVerData(version):
 
 def saveToFile(fdir,data):
     if type(data) == dict:
-        data = json.dumps(data)
+        data = json.dumps(data).encode("utf8")
     elif type(data) == str:
         data = data.encode("utf8")
     elif type(data) == bytes:
@@ -327,6 +327,16 @@ def downloadAssets(version):
             url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
             download(path, url)
 
+def jarExists(version):
+    path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
+    return os.path.exists(path)
+
+def downloadJar(version):
+    path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
+    url = loadVerData(version)["downloads"]["client"]["url"]
+    download(path, url)
+    
+
 
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
@@ -342,6 +352,10 @@ def launch(version, name, modpack=False, memory=1):
     else:
         vtype = "Forge"
         vver = version.split("-")[0]
+
+    if not jarExists(vver):
+        warn("Jar file not found! Downloading new jar..")
+        downloadJar(vver)
 
     if not assetsIndexExist(vver):
         warn("Assets Index not found! Downloading new index..")
