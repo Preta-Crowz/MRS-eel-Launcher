@@ -190,15 +190,16 @@ def getLibs(version):
     return ";".join(libs)
 
 
-def getJava(noArgs=False):
-    javaw = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/javaw")
+def getRuntime(noArgs=False):
+    bn = "java" if osType == "osx" else "javaw"
+    runtime = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/" + bn)
     if noArgs:
-        return javaw + (".exe" if osType() == "windows" else "")
+        return runtime + (".exe" if osType() == "windows" else "")
     elif osType() == "windows":
-        return javaw + ".exe -XX:HeapDumpPath=minecraft.heapdump"
+        return runtime + ".exe -XX:HeapDumpPath=minecraft.heapdump"
     elif osType() == "osx":
-        return javaw + " -XstartOnFirstThread"
-    return javaw
+        return runtime + " -XstartOnFirstThread"
+    return runtime
     
 
 
@@ -427,7 +428,7 @@ def launch(version, name, modpack=False, memory=1):
         vtype = "Forge"
         vver = version.split("-")[0]
 
-    if not os.path.exists(getJava(True)):
+    if not os.path.exists(getRuntime(True)):
         warn("Runtime not found! Downloading new runtime..")
         downloadRuntime()
 
@@ -450,7 +451,7 @@ def launch(version, name, modpack=False, memory=1):
 
     info("Launching " + modpack + "!")
     cmd = " ".join([
-        getJava(),
+        getRuntime(),
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
