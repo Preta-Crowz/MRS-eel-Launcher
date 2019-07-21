@@ -1,2 +1,3 @@
+requests
 pypresence
 https://github.com/ChrisKnott/Eel/archive/master.zip
