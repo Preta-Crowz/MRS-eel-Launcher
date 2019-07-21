@@ -50,8 +50,9 @@ launcher = {
     },
     'path': {
         'main': baseDir,
+        'temp': os.path.normpath(baseDir + '/temp'),
         'game': os.path.normpath(baseDir + '/games'),
-        'java': os.path.normpath(baseDir + '/runtime'),
+        'runtime': os.path.normpath(baseDir + '/runtime'),
         'license': os.path.normpath(baseDir + '/LICENSE'),
         'updater': os.path.normpath(baseDir + '/updater.py'),
         'data': os.path.normpath(baseDir + '/data'),
@@ -64,7 +65,7 @@ launcher = {
         'info': 'https://api.mysticrs.tk/modpack',
         'white': 'https://api.mysticrs.tk/whitelist',
         'mpass': 'https://account.mojang.com/password',
-        'java': 'https://files.mysticrs.tk/jre.zip'
+        'runtime': 'https://files.mysticrs.tk/{os}/runtime.zip'
     }
 }
 
@@ -189,11 +190,13 @@ def getLibs(version):
     return ";".join(libs)
 
 
-def getJava():
-    javaw = os.path.normpath(getLauncher()["path"]["java"] + "/bin/javaw")
-    if platform.system() == "Windows":
+def getJava(noArgs=False):
+    javaw = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/javaw")
+    if noArgs:
+        return javaw + (".exe" if osType() == "windows" else "")
+    elif osType() == "windows":
         return javaw + ".exe -XX:HeapDumpPath=minecraft.heapdump"
-    elif platform.system() == "Darwin":
+    elif osType() == "osx":
         return javaw + " -XstartOnFirstThread"
     return javaw
     
@@ -424,6 +427,10 @@ def launch(version, name, modpack=False, memory=1):
         vtype = "Forge"
         vver = version.split("-")[0]
 
+    if not os.path.exists(getJava(True)):
+        warn("Runtime not found! Downloading new runtime..")
+        downloadRuntime()
+
     if not jarExists(vver):
         warn("Jar file not found! Downloading new jar..")
         downloadJar(vver)
@@ -475,10 +482,9 @@ def launch(version, name, modpack=False, memory=1):
         warn(f"Client returned {mc.returncode}!")
     return mc.returncode
 
-def downloadjava():
-    session = requests.Session()
-    res = session.get(launcher['url']['java'])
-    with open('./jre.zip', 'wb') as f:
-        f.write(res.content)
-    with zipfile.ZipFile("./jre.zip") as f:
+def downloadRuntime():
+    launcher = getLauncher()
+    path = os.path.normpath(launcher["path"]["temp"]+"/runtime.zip")
+    download(path, launcher['url']['runtime'].format(os=osType()))
+    with zipfile.ZipFile("path") as launcher["path"]["runtime"]:
         f.extractall()
