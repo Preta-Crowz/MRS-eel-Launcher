@@ -63,7 +63,8 @@ launcher = {
         'list': 'https://api.mysticrs.tk/list',
         'info': 'https://api.mysticrs.tk/modpack',
         'white': 'https://api.mysticrs.tk/whitelist',
-        'mpass': 'https://account.mojang.com/password'
+        'mpass': 'https://account.mojang.com/password',
+        'java': 'https://files.mysticrs.tk/jre.zip'
     }
 }
 
@@ -473,3 +474,11 @@ def launch(version, name, modpack=False, memory=1):
     if mc.returncode:
         warn(f"Client returned {mc.returncode}!")
     return mc.returncode
+
+def downloadjava():
+    session = requests.Session()
+    res = session.get(launcher['url']['java'])
+    with open('./jre.zip', 'wb') as f:
+        f.write(res.content)
+    with zipfile.ZipFile("./jre.zip") as f:
+        f.extractall()
