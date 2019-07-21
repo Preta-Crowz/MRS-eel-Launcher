@@ -487,5 +487,5 @@ def downloadRuntime():
     launcher = getLauncher()
     path = os.path.normpath(launcher["path"]["temp"]+"/runtime.zip")
     download(path, launcher['url']['runtime'].format(os=osType()))
-    with zipfile.ZipFile("path") as launcher["path"]["runtime"]:
-        f.extractall()
+    with zipfile.ZipFile(path) as launcher["path"]["runtime"]:
+        f.extractall(os.path.normpath(launcher["path"]["runtime"]))
