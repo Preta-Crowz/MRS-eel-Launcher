@@ -7,8 +7,6 @@ body {
     color: white;
     height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .box ,#lform{
@@ -26,6 +24,24 @@ body {
     color: white;
     text-transform: uppercase;
     font-weight: 500;
+}
+
+#log{
+    /*width: 450px;*/
+    padding: 5px 10px 5px 10px;
+    position: absolute;
+    top: 20px;
+    left: 220px;
+    transform: translate(-50%, -50%);
+    background: #191919;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+#logs{
+    background: #fff;
+    color: black;
 }
 
 .box input[type = "text"], .box input[type = "password"],#ver {

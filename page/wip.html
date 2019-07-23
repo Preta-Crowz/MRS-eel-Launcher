@@ -9,9 +9,9 @@
 <body>
 <form id="lform">
     <p>This launcher is work in progress now.</p>
-    <input id="ver" name="ver" placeholder="Version" type="text">
-    <input type="button" form="lform" id="launch" name="launch" value="테스트 실행">
-    <input type="button" form="lform" id="logout" name="logout" value="로그아웃">
+    <input form="lform" id="ver" name="ver" placeholder="Version" type="text">
+    <input form="lform" id="launch" name="launch" type="button" value="테스트 실행">
+    <input form="lform" id="logout" name="logout" type="button" value="로그아웃">
 </form>
 <script type="text/javascript">
     eel.expose(getToken);

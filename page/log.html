@@ -58,16 +58,18 @@
     </script>
 </head>
 <body>
-<label for="visDebug">Debug</label>
-<input id="visDebug" name="visDebug" type="checkbox"/>
-<label for="visInfo">Info</label>
-<input checked="checked" id="visInfo" name="visInfo" type="checkbox"/>
-<label for="visWarn">Warning</label>
-<input checked="checked" id="visWarn" name="visWarn" type="checkbox"/>
-<label for="visError">Error</label>
-<input checked="checked" id="visError" name="visError" type="checkbox"/>
-<label for="visFatal">Fatal</label>
-<input checked="checked" id="visFatal" name="visFatal" type="checkbox"/>
+<form id="log">
+<label form="log" for="visDebug">Debug</label>
+<input form="log" id="visDebug" name="visDebug" type="checkbox"/>
+<label form="log" for="visInfo">Info</label>
+<input form="log" checked="checked" id="visInfo" name="visInfo" type="checkbox"/>
+<label form="log" for="visWarn">Warning</label>
+<input form="log" checked="checked" id="visWarn" name="visWarn" type="checkbox"/>
+<label form="log" for="visError">Error</label>
+<input form="log" checked="checked" id="visError" name="visError" type="checkbox"/>
+<label form="log" for="visFatal">Fatal</label>
+<input form="log" checked="checked" id="visFatal" name="visFatal" type="checkbox"/>
+</form>
 <content id="logs"></content>
 <script type="text/javascript">
     $("#visDebug").on('click', function () {
