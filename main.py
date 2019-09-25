@@ -61,6 +61,7 @@ launcher = {
         'assets': os.path.normpath(baseDir + '/assets')
     },
     'url': {
+        'vers': 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
         'list': 'https://api.mysticrs.tk/list',
         'info': 'https://api.mysticrs.tk/modpack',
         'white': 'https://api.mysticrs.tk/whitelist',
@@ -258,9 +259,12 @@ def loadFromWeb(url):
 def getBaseVer(forgedVersion):
     return forgedVersion.split("-")[0]
 
+vdata = None
 def getVerData(version):
-    urlData = loadFromWeb("https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/"+version+"/version.json")
-    return loadFromWeb(urlData["url"])
+    global vdata
+    if vdata is None:
+        vdata = loadFromWeb(getLauncher()["url"]["vers"])["versions"]
+    return loadFromWeb(list(filter((lambda v: v["id"] == version),vdata))[0]["url"])
 
 def loadVerData(version):
     fn = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".json")
