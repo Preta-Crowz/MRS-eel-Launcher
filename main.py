@@ -330,27 +330,46 @@ def mcArguments(version):
         args = " ".join(r)
     return args.replace("$","")
 
-def assetsCheck(version):
+def assetsCheck(version, legacy=0):
     index = loadAssetsIndex(version)["objects"]
     for k in index:
-        fh = index[k]["hash"]
-        path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
-        if not os.path.exists(path):
-            return False
+        if legacy:
+            path = os.path.normpath(getLauncher()["path"]["assets"]+"/"+k)
+            if not os.path.exists(path):
+                return False
+        if legacy is not 1:
+            fh = index[k]["hash"]
+            path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
+            if not os.path.exists(path):
+                return False
+
     return True
 
-def downloadAssets(version):
+def downloadAssets(version, legacy=0):
     index = loadAssetsIndex(version)["objects"]
     count = len(list(index.keys()))
     now = 1
     for k in index:
         fh = index[k]["hash"]
-        path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
-        if not os.path.exists(path):
-            info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
-            url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
-            download(path, url)
+        if legacy:
+            path = os.path.normpath(getLauncher()["path"]["assets"]+"/"+k)
+            if not os.path.exists(path):
+                info("Downloading Legacy " + k + "(" + str(now) + "/" + str(count) + ")")
+                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
+                download(path, url)
+        if legacy is not 1:
+            path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
+            if not os.path.exists(path):
+                info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
+                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
+                download(path, url)
         now += 1
+
+def isLegacy(version):
+    if int(version.split(".")[1]) > 8: return 0
+    elif int(version.split(".")[1]) == 8: return 2
+    return 1
+
 
 def jarExists(version):
     path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
@@ -444,9 +463,11 @@ def launch(version, name, modpack=False, memory=1):
         warn("Assets Index not found! Downloading new index..")
         downloadAssetsIndex(vver)
 
-    if not assetsCheck(vver):
+    Legacy = isLegacy(vver)
+
+    if not assetsCheck(vver, legacy=Legacy):
         warn("Some assets not found! Downloading new assets..")
-        downloadAssets(vver)
+        downloadAssets(vver, legacy=Legacy)
 
     if not libCheck(vver):
         warn("Some libraries not found! Downloading new libraries..")
