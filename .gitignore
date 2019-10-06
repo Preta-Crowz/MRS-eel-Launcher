@@ -13,3 +13,7 @@ extracts
 textures_*
 temp
 .idea
+.vs/
+.vscode/
+arg.txt
+pml/

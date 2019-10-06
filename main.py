@@ -11,12 +11,16 @@ import subprocess
 import threading
 import time
 import zipfile
+import shutil
+
+from pmlauncher import pml, mlogin, mrule
 
 import pycraft
 import pycraft.exceptions as pex
 from pycraft import authentication
 
 import setup
+
 logger = logging.Logger("MRS")
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-', '')
@@ -35,7 +39,6 @@ logger.addHandler(file)
 logger.addHandler(stream)
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
-currToken = False
 
 baseDir = os.path.dirname(os.path.realpath(__file__))
 launcher = {
@@ -124,6 +127,8 @@ except OSError:
 if os.path.exists(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai")):
     eel.loadInfo(json.load(open(os.path.normpath(getLauncher()["path"]["data"] + "/account.mai"))))
 
+session = mlogin.session()  # store game session
+
 @eel.expose
 def login(mcid, mcpw):
     try:
@@ -131,7 +136,14 @@ def login(mcid, mcpw):
             warn("Invalid ID or Password!")
         auth_token = pycraft.authentication.AuthenticationToken()
         auth_token.authenticate(mcid, mcpw)
+
         username = auth_token.profile.name
+
+        global session
+        session.access_token = auth_token.access_token
+        session.uuid = auth_token.profile.id_
+        session.username = username
+
         info('Logined to ' + username)
         global rpc
         rpc.update(state='Selectting a Modpack', details='Logined to ' + username, large_image='favicon',
@@ -139,8 +151,6 @@ def login(mcid, mcpw):
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
         return False
-    global currToken
-    currToken = auth_token.access_token
     return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
 
 
@@ -152,10 +162,13 @@ def isTokenVaild():
 
 @eel.expose
 def refreshToken():
-    global currToken, auth_token
     auth_token = pycraft.AuthenticationToken(*(eel.loadToken()()))
     auth_token.refresh()
-    currToken = auth_token.access_token
+
+    global session
+    session.username = auth_token.profile.name
+    session.uuid = auth_token.profile.id_
+    session.access_token = auth_token.access_token
     return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
 
 
@@ -163,354 +176,73 @@ rpc.update(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon'
            start=int(time.time()))
 
 
-def getuuid(name):
-    r = requests.get("https://api.mojang.com/users/profiles/minecraft/" + name).text
-    return json.loads(r)["id"]
+def mkd(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 
-def libDir(o):
-    path = o["path"]
-    if path.find("lwjgl") + 1:
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
-               os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
-    elif path.find("java-objc-bridge") + 1 and osType == "osx":
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
-               os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
-    return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path)
+def download(path, url):
+    dirpath = os.path.dirname(path)
+    mkd(dirpath)
 
-
-def getLibs(version):
-    f = open(getLauncher()["path"]["mcver"] + "/" + version + ".json")
-    data = json.load(f)
-    libs = []
-    for lib in data["libraries"]:
-        try:
-            libs.append(libDir(lib["downloads"]["artifact"]))
-        except:
-            pass
-    return ";".join(libs)
-
-
-def getRuntime(noArgs=False):
-    bn = "java" if osType == "osx" else "javaw"
-    runtime = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/" + bn)
-    if noArgs:
-        return runtime + (".exe" if osType() == "windows" else "")
-    elif osType() == "windows":
-        return runtime + ".exe -XX:HeapDumpPath=minecraft.heapdump"
-    elif osType() == "osx":
-        return runtime + " -XstartOnFirstThread"
-    return runtime
-    
-
-
-nextLog = False
-nLogThread = ""
-nLogLevel = ""
-nextOutput = ""
-
-
-def logOutput(pipe):
-    for line in iter(pipe.readline, b'\n'):
-        global nextLog, nLogThread, nLogLevel, nextOutput
-        lastOutput = line.decode()
-        if lastOutput == "": return
-        if lastOutput.startswith("AL lib"): return
-        baseRegex = r'<log4j:Event logger=".+" timestamp="\d+" level="(?P<level>.+)" thread="(?P<thread>.+)">'
-        rmatch = re.search(baseRegex, lastOutput)
-        if rmatch:
-            if rmatch["level"] == "DEBUG":
-                nextLog = debug
-            elif rmatch["level"] == "INFO":
-                nextLog = info
-            elif rmatch["level"] == "WARN":
-                nextLog = warn
-            elif rmatch["level"] == "ERROR":
-                nextLog = error
-            elif rmatch["level"] == "FATAL":
-                nextLog = fatal
-            else:
-                continue
-            nLogThread = rmatch["thread"]
-            nLogLevel = rmatch["level"]
-            continue
-        elif nextLog:
-            passRegex = r"</log4j:Event>|Narrator library"
-            if re.search(passRegex, lastOutput): continue
-            logRegex = r"<log4j:Message><!\[CDATA\[(?P<output>.+)\]\]>(</log4j:Message>)?"
-            output = re.search(logRegex, lastOutput)
-            end = r"</log4j:Message>"
-            outEnd = re.search(end, lastOutput)
-            if output and outEnd:
-                nextLog("[" + nLogThread + "/" + nLogLevel + "] " + output["output"])
-                nextOutput = ""
-            elif output:
-                nextOutput += lastOutput
-            else:
-                nextLog("[" + nLogThread + "/" + nLogLevel + "] " + nextOutput + lastOutput)
-                nextOutput = ""
-            continue
-        else:
-            debug(lastOutput)
-
-def loadFromWeb(url):
-    return json.loads(requests.get(url).text)
-
-def getBaseVer(forgedVersion):
-    return forgedVersion.split("-")[0]
-
-vdata = None
-def getVerData(version):
-    global vdata
-    if vdata is None:
-        vdata = loadFromWeb(getLauncher()["url"]["vers"])["versions"]
-    return loadFromWeb(list(filter((lambda v: v["id"] == version),vdata))[0]["url"])
-
-def loadVerData(version):
-    fn = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".json")
-    if os.path.exists(fn):
-        return json.load(open(fn,"r"))
-    else:
-        data = getVerData(version)
-        saveToFile(fn, data)
-        return data
-
-def saveToFile(fdir,data):
-    if type(data) == dict:
-        data = json.dumps(data).encode("utf8")
-    elif type(data) == str:
-        data = data.encode("utf8")
-    elif type(data) == bytes:
-        pass
-    else:
-        raise TypeError("Unsupported Type")
-    mkLoop(os.path.dirname(fdir))
-    return open(fdir, "wb").write(data)
-
-def mkLoop(fdir):
-    if os.path.exists(fdir):
+    response = requests.get(url, stream=True)
+    if int(response.status_code / 100) is not 2:
         return
-    try:
-        os.mkdir(fdir)
-    except:
-        mkLoop(os.path.dirname(fdir))
-        os.mkdir(fdir)
 
-def download(fdir,url):
-    return saveToFile(fdir, requests.get(url).content)
-
-def loadAssetsIndex(version):
-    baseData = loadVerData(version)
-    vid = baseData["assetIndex"]["id"]
-    path = os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json")
-    if not os.path.exists(path):
-        downloadAssetsIndex(version)
-    return json.load(open(path))
-
-def downloadAssetsIndex(version):
-    baseData = loadVerData(version)
-    vid = baseData["assetIndex"]["id"]
-    return download(os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json"), baseData["assetIndex"]["url"])
-
-def assetsIndexExist(version):
-    baseData = loadVerData(version)
-    vid = baseData["assetIndex"]["id"]
-    return os.path.exists(os.path.normpath(getLauncher()["path"]["assets"]+"/indexes/"+vid+".json"))
-
-def mcArguments(version):
-    data = loadVerData(version)
-    if "minecraftArguments" in data.keys():
-        args = data["minecraftArguments"]
-    elif "arguments" in data.keys():
-        args = data["arguments"]["game"]
-        r = []
-        for arg in args:
-            if type(arg) == str:
-                r.append(arg)
-        args = " ".join(r)
-    return args.replace("$","")
-
-def assetsCheck(version, legacy=0):
-    index = loadAssetsIndex(version)["objects"]
-    for k in index:
-        if legacy:
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/"+k)
-            if not os.path.exists(path):
-                return False
-        if legacy is not 1:
-            fh = index[k]["hash"]
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
-            if not os.path.exists(path):
-                return False
-
-    return True
-
-def downloadAssets(version, legacy=0):
-    index = loadAssetsIndex(version)["objects"]
-    count = len(list(index.keys()))
-    now = 1
-    for k in index:
-        fh = index[k]["hash"]
-        if legacy:
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/"+k)
-            if not os.path.exists(path):
-                info("Downloading Legacy " + k + "(" + str(now) + "/" + str(count) + ")")
-                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
-                download(path, url)
-        if legacy is not 1:
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
-            if not os.path.exists(path):
-                info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
-                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
-                download(path, url)
-        now += 1
-
-def isLegacy(version):
-    if int(version.split(".")[1]) > 8: return 0
-    elif int(version.split(".")[1]) == 8: return 2
-    return 1
+    with open(path, 'wb') as f:
+        shutil.copyfileobj(response.raw, f)
 
 
-def jarExists(version):
-    path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
-    return os.path.exists(path)
+def checkRuntime():
+    launcher = getLauncher()
+    path = os.path.normpath(launcher["path"]["temp"]+"/runtime.zip")
 
-def downloadJar(version):
-    path = os.path.normpath(getLauncher()["path"]["mcver"]+"/"+version+".jar")
-    url = loadVerData(version)["downloads"]["client"]["url"]
-    download(path, url)
+    if os.path.isfile(path):
+        return
 
-def libCheck(version):
-    index = loadVerData(version)["libraries"]
-    for o in index:
-        try:
-            path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
-        except:
-            continue
-        if not os.path.exists(path):
-            return False
-        if "classifiers" in o["downloads"].keys():
-            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
-                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
-                extract(path)
-                if not os.path.exists(path):
-                    return False
-            
-    return True
+    download(path, launcher['url']['runtime'].format(os=mrule.osname))
+    with zipfile.ZipFile(path) as f:
+        f.extractall(os.path.normpath(launcher["path"]["runtime"]))
 
-def downloadLibs(version):
-    index = loadVerData(version)["libraries"]
-    count = len(index)
-    now = 1
-    for o in index:
-        try:
-            path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
-        except:
-            error("Failed to download lib :" + o["name"])
-            warn("Game will be launch unstable!")
-            continue
-        if not os.path.exists(path):
-            info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
-            url = o["downloads"]["artifact"]["url"]
-            download(path, url)
-        if "classifiers" in o["downloads"].keys():
-            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
-                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
-                url = o["downloads"]["classifiers"]["natives-"+osType()]["url"]
-                if not os.path.exists(path):
-                    download(path, url)
-        now += 1
-    
-def osType():
-    base = platform.system()
-    if base == "Windows":
-        return "windows"
-    elif base == "Darwin":
-        return "osx"
-    else:
-        return "linux"
 
-def extract(nativeFile):
-    zf = zipfile.ZipFile(nativeFile)
-    zf.extractall(os.path.normpath(getLauncher()["path"]["main"] + "/extracts"))
-    zf.close()
+def download_event(x):
+    info(x.filekind + " - " + x.filename + " - " + str(x.currentvalue) + "/" + str(x.maxvalue))
 
 
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
-    if not modpack:
-        if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?", version):
-            modpack = "Snapshot " + version
-            vtype = "snapshot"
-            vver = version
-        else:
-            modpack = "Vanilla " + version
-            vtype = "release"
-            vver = version
+
+     ### SESSION
+    global session
+    session.access_token = "test_token"
+    session.uuid = "test_uuid"
+    session.username = "hellooooo"
+
+    checkRuntime()
+
+    if mrule.osname == "windows":
+        bn = "javaw.exe"
     else:
-        vtype = "Forge"
-        vver = version.split("-")[0]
+        bn = "java"
+    runtime = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/" + bn)
 
-    if not os.path.exists(getRuntime(True)):
-        warn("Runtime not found! Downloading new runtime..")
-        downloadRuntime()
+    pml.initialize(os.path.normpath(baseDir + '/pml'))
+    pml.downloadEventHandler = download_event
+    cmd = runtime + " " + pml.startProfile(version, xmx_mb=1024, session=session)
 
-    if not jarExists(vver):
-        warn("Jar file not found! Downloading new jar..")
-        downloadJar(vver)
-
-    if not assetsIndexExist(vver):
-        warn("Assets Index not found! Downloading new index..")
-        downloadAssetsIndex(vver)
-
-    Legacy = isLegacy(vver)
-
-    if not assetsCheck(vver, legacy=Legacy):
-        warn("Some assets not found! Downloading new assets..")
-        downloadAssets(vver, legacy=Legacy)
-
-    if not libCheck(vver):
-        warn("Some libraries not found! Downloading new libraries..")
-        downloadLibs(vver)
-
-
-    info("Launching " + modpack + "!")
-    cmd = " ".join([
-        getRuntime(),
-        "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
-        "-Dminecraft.launcher.brand=mrs-eel-launcher",
-        "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
-        "-cp",
-        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
-        "-Xmx" + str(memory * 1024) + "M",
-        "-XX:+UnlockExperimentalVMOptions",
-        "-XX:+UseG1GC",
-        "-XX:G1NewSizePercent=20",
-        "-XX:G1ReservePercent=20",
-        "-XX:MaxGCPauseMillis=50",
-        "-XX:G1HeapRegionSize=32M",
-        "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
-        "net.minecraft.client.main.Main",
-        mcArguments(version).format(auth_player_name=name, version_name=version,
-            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
-            assets_root=getLauncher()["path"]["assets"],
-            assets_index_name=getVerData(version)["assets"],
-            auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype,
-            user_properties="{}")
-    ])
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
+
+    rpc.update(state='Playing MRS', details=str(modpack), large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
-    with mc.stdout as gameLog:
-        logOutput(gameLog)
+
+    while True:
+        line = mc.stdout.readline()
+        if not line:
+            break
+        d = line.rstrip()
+        print(d)
+
     if mc.returncode:
         warn(f"Client returned {mc.returncode}!")
     return mc.returncode
-
-def downloadRuntime():
-    launcher = getLauncher()
-    path = os.path.normpath(launcher["path"]["temp"]+"/runtime.zip")
-    download(path, launcher['url']['runtime'].format(os=osType()))
-    with zipfile.ZipFile(path) as f:
-        f.extractall(os.path.normpath(launcher["path"]["runtime"]))
