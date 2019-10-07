@@ -496,7 +496,7 @@ def launch(version, name, modpack=False, memory=1):
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=getVerData(version)["assets"],
             auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype,
-            user_properties="{}")
+            user_properties="{}", auth_session=currToken, game_assets=getLauncher()["path"]["assets"])
     ])
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
