@@ -438,6 +438,7 @@ def extract(nativeFile):
 
 @eel.expose
 def launch(version, name, modpack=False, memory=1):
+    gp = modpack if modpack else version
     if not modpack:
         if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?", version):
             modpack = "Snapshot " + version
@@ -491,8 +492,8 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "net.minecraft.client.main.Main",
-        mcArguments(version).format(auth_player_name=name, version_name=version,
-            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + version),
+        mcArguments(version).format(auth_player_name=name, version_name=vver,
+            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + gp),
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=getVerData(version)["assets"],
             auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype,
