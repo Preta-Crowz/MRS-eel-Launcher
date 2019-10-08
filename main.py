@@ -188,7 +188,14 @@ def getLibs(version):
         libs.append(libDir(lib["downloads"]["artifact"]))
         for l in libDir(lib["downloads"]["artifact"]).split(";"):
             if (l.find("natives") != -1):
-                extract(l)
+                try:
+                    extract(l)
+                except:
+                    url = "https://libraries.minecraft.net" + l.replace(getLauncher()["path"]["mclib"],"").replace("\\","/")
+                    debug(url)
+                    download(l,url)
+                    extract(l)
+
     return ";".join(libs)
 
 
