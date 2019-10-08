@@ -14,6 +14,7 @@ dirs = [
     os.path.normpath(baseDir+'/runtime'),
     os.path.normpath(baseDir+'/data'),
     os.path.normpath(baseDir+'/lib'),
+    os.path.normpath(baseDir+'/logs'),
     os.path.normpath(baseDir+'/versions'),
     os.path.normpath(baseDir+'/assets'),
     os.path.normpath(baseDir+'/assets/indexes'),
