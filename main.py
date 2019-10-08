@@ -184,10 +184,11 @@ def getLibs(version):
     data = json.load(f)
     libs = []
     for lib in data["libraries"]:
-        try:
-            libs.append(libDir(lib["downloads"]["artifact"]))
-        except:
-            pass
+        if not "artifact" in lib["downloads"].keys(): continue
+        libs.append(libDir(lib["downloads"]["artifact"]))
+        for l in libDir(lib["downloads"]["artifact"]).split(";"):
+            if (l.find("natives") != -1):
+                extract(l)
     return ";".join(libs)
 
 
@@ -381,44 +382,53 @@ def downloadJar(version):
     download(path, url)
 
 def libCheck(version):
+    ok = True
     index = loadVerData(version)["libraries"]
     for o in index:
-        try:
+        k = o["downloads"].keys()
+        if "artifact" in k:
             path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
-        except:
-            continue
-        if not os.path.exists(path):
-            return False
-        if "classifiers" in o["downloads"].keys():
-            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
-                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
-                extract(path)
+            if not os.path.exists(path):
+                debug(path)
+                ok = False
+        if "classifiers" in k:
+            if osType() == "windows":
+                if ("natives-windows" in o["downloads"]["classifiers"].keys()): ost = "windows"
+                else: ost = "windows-64"
+            else: ost = osType()
+            if "natives-"+ost in o["downloads"]["classifiers"].keys():
+                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+ost]["path"])
+                debug(path)
                 if not os.path.exists(path):
-                    return False
+                    ok = False
             
-    return True
+    return ok
 
 def downloadLibs(version):
     index = loadVerData(version)["libraries"]
     count = len(index)
     now = 1
     for o in index:
-        try:
+        k = o["downloads"].keys()
+        if "artifact" in k:
             path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
-        except:
-            error("Failed to download lib :" + o["name"])
-            warn("Game will be launch unstable!")
-            continue
-        if not os.path.exists(path):
-            info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
-            url = o["downloads"]["artifact"]["url"]
-            download(path, url)
-        if "classifiers" in o["downloads"].keys():
-            if "natives-"+osType() in o["downloads"]["classifiers"].keys():
-                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+osType()]["path"])
-                url = o["downloads"]["classifiers"]["natives-"+osType()]["url"]
+            if not os.path.exists(path):
+                info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
+                url = o["downloads"]["artifact"]["url"]
+                debug("Downloading Library "+path)
+                download(path, url)
+        if "classifiers" in k:
+            if osType() == "windows":
+                if ("natives-windows" in o["downloads"]["classifiers"].keys()): ost = "windows"
+                else: ost = "windows-64"
+            else: ost = osType()
+            if "natives-"+ost in o["downloads"]["classifiers"].keys():
+                path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+ost]["path"])
+                url = o["downloads"]["classifiers"]["natives-"+ost]["url"]
                 if not os.path.exists(path):
+                    debug("Downloading Native Library "+path)
                     download(path, url)
+            else: warn("Native Library " + o["downloads"]["classifiers"]["natives-"+ost]["path"] + " Not Found, game can be unstable")
         now += 1
     
 def osType():
@@ -481,8 +491,6 @@ def launch(version, name, modpack=False, memory=1):
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
         "-Dminecraft.launcher.version=" + getLauncher()["ver"]["str"],
-        "-cp",
-        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "-Xmx" + str(memory * 1024) + "M",
         "-XX:+UnlockExperimentalVMOptions",
         "-XX:+UseG1GC",
@@ -491,6 +499,8 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:MaxGCPauseMillis=50",
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
+        "-cp",
+        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "net.minecraft.client.main.Main",
         mcArguments(version).format(auth_player_name=name, version_name=vver,
             game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + gp),
