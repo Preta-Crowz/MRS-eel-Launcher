@@ -440,7 +440,7 @@ def extract(nativeFile):
 def launch(version, name, modpack=False, memory=1):
     gp = modpack if modpack else version
     if not modpack:
-        if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )\d{1,2}?", version):
+        if re.match("\d\dw\d\d.|1\.\d{1,2}(\.\d{1,2})?-pre( release )?\d{1,2}?", version):
             modpack = "Snapshot " + version
             vtype = "snapshot"
             vver = version
