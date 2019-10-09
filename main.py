@@ -66,7 +66,8 @@ launcher = {
         'info': 'https://api.mysticrs.tk/modpack',
         'white': 'https://api.mysticrs.tk/whitelist',
         'mpass': 'https://account.mojang.com/password',
-        'runtime': 'https://files.mysticrs.tk/{os}/runtime.zip'
+        'runtime': 'https://files.mysticrs.tk/{os}/runtime.zip',
+        'native': 'https://files.mysticrs.tk/native-{os}.zip'
     }
 }
 
@@ -191,10 +192,7 @@ def getLibs(version):
                 try:
                     extract(l)
                 except:
-                    url = "https://libraries.minecraft.net" + l.replace(getLauncher()["path"]["mclib"],"").replace("\\","/")
-                    debug(url)
-                    download(l,url)
-                    extract(l)
+                    pass
 
     return ";".join(libs)
 
@@ -422,7 +420,6 @@ def downloadLibs(version):
             if not os.path.exists(path):
                 info("Downloading " + o["name"] + "(" + str(now) + "/" + str(count) + ")")
                 url = o["downloads"]["artifact"]["url"]
-                debug("Downloading Library "+path)
                 download(path, url)
         if "classifiers" in k:
             if osType() == "windows":
@@ -433,7 +430,6 @@ def downloadLibs(version):
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+ost]["path"])
                 url = o["downloads"]["classifiers"]["natives-"+ost]["url"]
                 if not os.path.exists(path):
-                    debug("Downloading Native Library "+path)
                     download(path, url)
             else: warn("Native Library " + o["downloads"]["classifiers"]["natives-"+ost]["path"] + " Not Found, game can be unstable")
         now += 1
@@ -483,6 +479,12 @@ def launch(version, name, modpack=False, memory=1):
 
     Legacy = isLegacy(vver)
 
+    if Legacy:
+        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType())
+        if not os.path.exists(path):
+            download(path, getLauncher()["url"]["native"].format(os=osType()))
+        extract(path)
+
     if not assetsCheck(vver, legacy=Legacy):
         warn("Some assets not found! Downloading new assets..")
         downloadAssets(vver, legacy=Legacy)
@@ -490,6 +492,7 @@ def launch(version, name, modpack=False, memory=1):
     if not libCheck(vver):
         warn("Some libraries not found! Downloading new libraries..")
         downloadLibs(vver)
+
 
 
     info("Launching " + modpack + "!")
