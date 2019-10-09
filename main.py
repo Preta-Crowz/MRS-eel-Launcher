@@ -372,9 +372,15 @@ def downloadAssets(version, legacy=0):
         now += 1
 
 def isLegacy(version):
-    if int(version.split(".")[1]) > 8: return 0
-    elif int(version.split(".")[1]) == 8: return 2
+    try:
+        if int(version.split(".")[1]) > 8: return 0
+        elif int(version.split(".")[1]) == 8: return 2
+    except IndexError:
+        rmat = re.match("(?P<year>\d{2})w\d{2}.", version)
+        if int(rmat["year"]) > 14: return 0
+        elif int(rmat["year"]) == "14": return 2
     return 1
+
 
 
 def jarExists(version):
@@ -520,7 +526,7 @@ def launch(version, name, modpack=False, memory=1):
             user_properties="{}", auth_session=currToken, game_assets=getLauncher()["path"]["assets"])
     ])
     debug(cmd)
-    mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
     rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
     with mc.stdout as gameLog:
