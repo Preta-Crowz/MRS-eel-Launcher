@@ -394,7 +394,6 @@ def libCheck(version):
         if "artifact" in k:
             path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["artifact"]["path"])
             if not os.path.exists(path):
-                debug(path)
                 ok = False
         if "classifiers" in k:
             if osType() == "windows":
@@ -403,7 +402,6 @@ def libCheck(version):
             else: ost = osType()
             if "natives-"+ost in o["downloads"]["classifiers"].keys():
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+ost]["path"])
-                debug(path)
                 if not os.path.exists(path):
                     ok = False
             
@@ -424,7 +422,8 @@ def downloadLibs(version):
         if "classifiers" in k:
             if osType() == "windows":
                 if ("natives-windows" in o["downloads"]["classifiers"].keys()): ost = "windows"
-                else: ost = "windows-64"
+                elif ("natives-windows-64" in o["downloads"]["classifiers"].keys()): ost = "windows-64"
+                else: continue
             else: ost = osType()
             if "natives-"+ost in o["downloads"]["classifiers"].keys():
                 path = os.path.normpath(getLauncher()["path"]["mclib"]+"/"+o["downloads"]["classifiers"]["natives-"+ost]["path"])
@@ -465,6 +464,14 @@ def launch(version, name, modpack=False, memory=1):
         vtype = "Forge"
         vver = version.split("-")[0]
 
+    Legacy = isLegacy(vver)
+
+    if Legacy:
+        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType())
+        if not os.path.exists(path):
+            download(path, getLauncher()["url"]["native"].format(os=osType()))
+        extract(path)
+
     if not os.path.exists(getRuntime(True)):
         warn("Runtime not found! Downloading new runtime..")
         downloadRuntime()
@@ -477,13 +484,6 @@ def launch(version, name, modpack=False, memory=1):
         warn("Assets Index not found! Downloading new index..")
         downloadAssetsIndex(vver)
 
-    Legacy = isLegacy(vver)
-
-    if Legacy:
-        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType())
-        if not os.path.exists(path):
-            download(path, getLauncher()["url"]["native"].format(os=osType()))
-        extract(path)
 
     if not assetsCheck(vver, legacy=Legacy):
         warn("Some assets not found! Downloading new assets..")
