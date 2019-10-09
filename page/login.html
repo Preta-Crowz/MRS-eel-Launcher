@@ -1,71 +1,28 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html class="text-body" style="background-color: #404040;">
+
 <head>
     <meta charset="utf-8">
-    <link href="style.css" rel="stylesheet">
-    <title>MRS Launcher - Login</title>
-    <script src="/eel.js" type="text/javascript"></script>
-    <script src="/jquery.js" type="text/javascript"></script>
-    <script src="/jquery.cookie.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        function saveToken(data) {
-            $.removeCookie("save")
-            $.removeCookie("name")
-            $.removeCookie("client")
-            $.removeCookie("access")
-            if($('#saveInfo')[0].checked){
-                $.cookie("save", "y", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("name", data[0], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("client", data[1], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("access", data[2], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-            } else {
-                $.cookie("save", "n", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("name", data[0], {path: "/", domain: "localhost"})
-                $.cookie("client", data[1], {path: "/", domain: "localhost"})
-                $.cookie("access", data[1], {path: "/", domain: "localhost"})
-            }
-            if (data[1]) window.location.href = "/wip.html"
-            return data[1]
-        }
-
-        if($.cookie("save") == "y"){
-            if(!eel.isTokenVaild()()){
-                $('#saveInfo').click()
-                saveToken(eel.refreshToken()())
-            }
-            window.location.href = "/wip.html"
-        }
-
-        eel.expose(loadToken)
-        function loadToken(){
-            try {
-                return [$.cookie("name"), $.cookie("access"), $.cookie("client")]
-            } catch(e) {
-                return [undefined, undefined, undefined]
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>MRS_eel_launcher</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-<body>
 
-<form class="box" id="lform" method="post">
-    <h1>Login</h1>
-    <input id="id" name="id" placeholder="Username" type="text">
-    <input id="password" name="password" placeholder="Password" type="password">
-    <label for="saveInfo" style="color: white">로그인 저장</label>
-    <input type="checkbox" id="saveInfo" name="saveInfo" >
-    <input form="lform" id="login" name="login" type="button" value="Login">
-    <br />
-    <a href="https://account.mojang.com/password">비밀번호를 잊으셨나요?</a>
-</form>
-<script type="text/javascript">
-    $("#login").on("click", function (event) {
-        var token = eel.login($("#id").val(), $("#password").val())(saveToken)
-    })
-</script>
-<!--<form action="https://account.mojang.com/password" method="get">
-    <input type="submit" value="비밀번호 찾기">
-</form>-->
-
+<body class="text-center" style="background-color: #404040;">
+    <div class="login-clean" style="background-color: rgb(64,64,64);">
+        <form method="post" style="background-color: #f14d24;">
+            <h2 class="sr-only">Login Form</h2>
+            <div class="illustration"><img class="bg-white border rounded-circle shadow-none tada animated" src="assets/img/e6c6ceb1-e707-47b5-9ce1-b896bc97d2e6.png" style="padding: 5px;width: 128px;height: 128px;"></div>
+            <div class="form-group"><input class="border rounded form-control" type="email" data-bs-hover-animate="rubberBand" name="email" placeholder="Email"></div>
+            <div class="form-group"><input class="border rounded form-control" type="password" data-bs-hover-animate="rubberBand" name="password" placeholder="Password"></div>
+            <div class="form-group"><button class="btn btn-primary btn-block border rounded" type="submit" style="background-color: #ffffff;color: rgb(0,0,0);">Log In</button></div><a class="forgot" href="#" style="color: rgb(106,146,255);">Forgot your email or password?</a></form>
+    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-animation.js"></script>
 </body>
+
 </html>
