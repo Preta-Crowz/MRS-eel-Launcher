@@ -59,7 +59,10 @@ launcher = {
         'data': os.path.normpath(baseDir + '/data'),
         'mclib': os.path.normpath(baseDir + '/lib'),
         'mcver': os.path.normpath(baseDir + '/versions'),
-        'assets': os.path.normpath(baseDir + '/assets')
+        'assets': os.path.normpath(baseDir + '/assets'),
+        'index' : os.path.normpath(baseDir + '/assets/indexes'),
+        'object' : os.path.normpath(baseDir + '/assets/objects'),
+        'legacy' : os.path.normpath(baseDir + '/assets/virual/legacy')
     },
     'url': {
         'vers': 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
@@ -349,6 +352,16 @@ def mcArguments(version):
         args = " ".join(r)
     return args.replace("$","")
 
+def isLegacy(version):
+    try:
+        if int(version.split(".")[1]) > 8: return 0
+        elif int(version.split(".")[1]) == 8: return 2
+    except IndexError:
+        rmat = re.match("(?P<year>\d{2})w\d{2}.", version)
+        if int(rmat["year"]) > 14: return 0
+        elif int(rmat["year"]) == "14": return 2
+    return 1
+
 def assetsCheck(version, legacy=0):
     index = loadAssetsIndex(version)["objects"]
     for k in index:
@@ -364,36 +377,35 @@ def assetsCheck(version, legacy=0):
 
     return True
 
-def downloadAssets(version, legacy=0):
-    index = loadAssetsIndex(version)["objects"]
-    count = len(list(index.keys()))
-    now = 1
-    for k in index:
-        fh = index[k]["hash"]
-        if legacy:
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/"+k)
-            if not os.path.exists(path):
-                info("Downloading Legacy " + k + "(" + str(now) + "/" + str(count) + ")")
-                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
-                download(path, url)
-        if legacy is not 1:
-            path = os.path.normpath(getLauncher()["path"]["assets"]+"/objects/"+fh[0:2]+"/"+fh)
-            if not os.path.exists(path):
-                info("Downloading " + k + "(" + str(now) + "/" + str(count) + ")")
-                url = "http://resources.download.minecraft.net/"+fh[0:2]+"/"+fh
-                download(path, url)
-        now += 1
 
-def isLegacy(version):
-    try:
-        if int(version.split(".")[1]) > 8: return 0
-        elif int(version.split(".")[1]) == 8: return 2
-    except IndexError:
-        rmat = re.match("(?P<year>\d{2})w\d{2}.", version)
-        if int(rmat["year"]) > 14: return 0
-        elif int(rmat["year"]) == "14": return 2
-    return 1
+def downloadResources(index):
+    isVirtual = False  # check legacy
+    v = index.get("virtual")
+    if v and v == "true":
+        isVirtual = True
 
+    items = list(index.get("objects").items())
+    count = len(items)
+
+    for i in range(0, count):
+        key = items[i][0]
+        value = items[i][1]
+
+        hash = value.get("hash")
+        hashName = hash[:2] + "/" + hash
+        hashPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + hashName)
+        hashUrl = "http://resources.download.minecraft.net/" + hashName
+
+    if not os.path.isfile(hashPath):
+        info("Downloading " + key + "(" + str(now) + "/" + str(count) + ")")
+        download(hashUrl, hashPath)
+
+        if isVirtual:
+            resPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + key)
+
+            if not os.path.isfile(resPath):
+                mkLoop(os.path.dirname(resPath))
+                shutil.copyfile(hashPath, resPath)
 
 
 def jarExists(version):
@@ -503,10 +515,9 @@ def launch(version, name, modpack=False, memory=1):
         warn("Assets Index not found! Downloading new index..")
         downloadAssetsIndex(vver)
 
+    assetVer = loadAssetsIndex(version)
+    downloadResources(assetVer)
 
-    if not assetsCheck(vver, legacy=Legacy):
-        warn("Some assets not found! Downloading new assets..")
-        downloadAssets(vver, legacy=Legacy)
 
     if not libCheck(vver):
         warn("Some libraries not found! Downloading new libraries..")
