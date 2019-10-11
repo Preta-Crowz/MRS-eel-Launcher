@@ -11,6 +11,7 @@ import subprocess
 import threading
 import time
 import zipfile
+import shutil
 
 import pycraft
 import pycraft.exceptions as pex
@@ -294,6 +295,7 @@ def saveToFile(fdir,data):
     mkLoop(os.path.dirname(fdir))
     return open(fdir, "wb").write(data)
 
+
 def mkLoop(fdir):
     if os.path.exists(fdir):
         return
@@ -303,8 +305,18 @@ def mkLoop(fdir):
         mkLoop(os.path.dirname(fdir))
         os.mkdir(fdir)
 
+
 def download(fdir,url):
-    return saveToFile(fdir, requests.get(url).content)
+    dirpath = os.path.dirname(fdir)
+    mkLoop(dirpath)
+
+    response = requests.get(url, stream=True)
+    if int(response.status_code / 100) is not 2:
+        return  # TODO : Raise Exception
+
+    with open(fdir, 'wb') as f:
+        shutil.copyfileobj(response.raw, f)
+    
 
 def loadAssetsIndex(version):
     baseData = loadVerData(version)
