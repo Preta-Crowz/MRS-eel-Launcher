@@ -68,6 +68,7 @@ launcher = {
         'mpass': 'https://account.mojang.com/password',
         'runtime': 'https://files.mysticrs.tk/{os}/runtime.zip',
         'native': 'https://files.mysticrs.tk/native-{os}.zip'
+        'file': 'https://files.mysticrs.tk/'
     }
 }
 

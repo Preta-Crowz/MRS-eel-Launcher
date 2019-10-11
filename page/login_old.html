@@ -9,7 +9,7 @@
         function saveToken(data) {
             $.cookie("name", data[0], {path: "/", domain: "localhost"});
             $.cookie("token", data[1], {path: "/", domain: "localhost"});
-            if (data[1]) window.location.href = "/wip.html"
+            if (data[1]) window.location.href = "/debug.html"
             return data[1]
         }
     </script>

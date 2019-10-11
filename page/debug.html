@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet">
+    <script src="/eel.js" type="text/javascript"></script>
+    <script src="/jquery.js" type="text/javascript"></script>
+    <script src="/jquery.cookie.js" type="text/javascript"></script>
+</head>
+<body>
+<form id="lform">
+    <p>This launcher is work in progress now.</p>
+    <input form="lform" id="vanilla" name="vanilla" type="button" value="바닐라">
+    <input form="lform" id="modpack" name="modpack" type="button" value="모드팩">
+    <input form="lform" id="logout" name="logout" type="button" value="로그아웃">
+</form>
+<script type="text/javascript">
+    $("#vanilla").on("click", function (event) {
+        window.location.href = "/debug_vanilla.html"
+    });
+    $("#modpack").on("click", function (event) {
+        window.location.href = "/debug_modpack.html"
+    });
+    $("#logout").on("click", function (event) {
+        $.removeCookie("save");
+        $.removeCookie("name");
+        $.removeCookie("client");
+        $.removeCookie("access");
+        $.cookie("save", "n", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"});
+        window.location.href = "/login.html"
+    })
+</script>
+</body>
+</html>

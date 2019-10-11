@@ -11,7 +11,7 @@
     <p>This launcher is work in progress now.</p>
     <input form="lform" id="ver" name="ver" placeholder="Version" type="text">
     <input form="lform" id="launch" name="launch" type="button" value="테스트 실행">
-    <input form="lform" id="logout" name="logout" type="button" value="로그아웃">
+    <input form="lform" id="debug" name="debug" type="button" value="디버그 메뉴">
 </form>
 <script type="text/javascript">
     eel.expose(getToken);
@@ -25,13 +25,8 @@
             return n
         })
     });
-    $("#logout").on("click", function (event) {
-        $.removeCookie("save");
-        $.removeCookie("name");
-        $.removeCookie("client");
-        $.removeCookie("access");
-        $.cookie("save", "n", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"});
-        window.location.href = "/login.html"
+    $("#debug").on("click", function (event) {
+        window.location.href = "/debug.html"
     })
 </script>
 </body>
