@@ -62,7 +62,7 @@ launcher = {
         'assets': os.path.normpath(baseDir + '/assets'),
         'index' : os.path.normpath(baseDir + '/assets/indexes'),
         'object' : os.path.normpath(baseDir + '/assets/objects'),
-        'legacy' : os.path.normpath(baseDir + '/assets/virual/legacy')
+        'legacy' : os.path.normpath(baseDir + '/assets/virtual/legacy')
     },
     'url': {
         'vers': 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
@@ -378,7 +378,7 @@ def assetsCheck(version, legacy=0):
     return True
 
 
-def downloadResources(index):
+def downloadAssets(index):
     isVirtual = False  # check legacy
     v = index.get("virtual")
     if v and v == "true":
