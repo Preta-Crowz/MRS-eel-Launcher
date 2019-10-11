@@ -17,3 +17,6 @@ mrs
 pml
 vanilla
 data/native-*
+.vs/*
+.vscode/*
+mvenv/*
