@@ -388,12 +388,12 @@ def assetsCheck(version, legacy=0):
 def downloadAssets(index):
     isMapResource = False
     m = index.get("map_to_resources")
-    if m and m == "true":
+    if m and m == True:
         isMapResource = True
 
     isVirtual = False  # check virtual
     v = index.get("virtual")
-    if v and v == "true":
+    if v and v == True:
         isVirtual = True
 
     items = list(index.get("objects").items())
@@ -408,12 +408,13 @@ def downloadAssets(index):
         hashPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + hashName)
         hashUrl = "http://resources.download.minecraft.net/" + hashName
 
-    if not os.path.isfile(hashPath):
-        info("Downloading " + key + "(" + str(now) + "/" + str(count) + ")")
-        download(hashUrl, hashPath)
+        if not os.path.isfile(hashPath):
+            info("Downloading " + key + "(" + str(now) + "/" + str(count) + ")")
+            download(hashUrl, hashPath)
 
         if isVirtual:
             resPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + key)
+            print(resPath)
 
             if not os.path.isfile(resPath):
                 mkLoop(os.path.dirname(resPath))
@@ -421,6 +422,7 @@ def downloadAssets(index):
 
         if isMapResource:
             resPath = os.path.normpath(getLauncher()["path"]["resources"] + "/" + key)
+            print(resPath)
 
             if not os.path.isfile(resPath):
                 mkLoop(os.path.dirname(resPath))
