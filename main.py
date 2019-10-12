@@ -133,7 +133,7 @@ def fatal(data):
 
 
 try:
-    mainThread = threading.Thread(target=eel.start, args=('login.html', 'log.html'), kwargs={'size': (1200, 800)})
+    mainThread = threading.Thread(target=eel.start, args=('login.html', 'log.html'), kwargs={'size': (1200, 800), 'mode': 'electron'})
     mainThread.start()
 except OSError:
     pass
