@@ -37,6 +37,7 @@ logger.addHandler(stream)
 rpc = pypresence.Presence(490596975457337374)
 rpc.connect()
 currToken = False
+currUuid = False
 
 baseDir = os.path.dirname(os.path.realpath(__file__))
 launcher = {
@@ -62,7 +63,8 @@ launcher = {
         'assets': os.path.normpath(baseDir + '/assets'),
         'index' : os.path.normpath(baseDir + '/assets/indexes'),
         'object' : os.path.normpath(baseDir + '/assets/objects'),
-        'legacy' : os.path.normpath(baseDir + '/assets/virtual/legacy')
+        'legacy' : os.path.normpath(baseDir + '/assets/virual/legacy'),
+        'resources' : os.path.normpath(baseDir + '/resources')
     },
     'url': {
         'vers': 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
@@ -167,11 +169,6 @@ def refreshToken():
 
 rpc.update(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space',
            start=int(time.time()))
-
-
-def getuuid(name):
-    r = requests.get("https://api.mojang.com/users/profiles/minecraft/" + name).text
-    return json.loads(r)["id"]
 
 
 def libDir(o):
@@ -378,8 +375,13 @@ def assetsCheck(version, legacy=0):
     return True
 
 
-def downloadAssets(index):
-    isVirtual = False  # check legacy
+def downloadResources(index):
+    isMapResource = False
+    m = index.get("map_to_resources")
+    if m and m == "true":
+        isMapResource = True
+
+    isVirtual = False  # check virtual
     v = index.get("virtual")
     if v and v == "true":
         isVirtual = True
@@ -402,6 +404,13 @@ def downloadAssets(index):
 
         if isVirtual:
             resPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + key)
+
+            if not os.path.isfile(resPath):
+                mkLoop(os.path.dirname(resPath))
+                shutil.copyfile(hashPath, resPath)
+
+        if isMapResource:
+            resPath = os.path.normpath(getLauncher()["path"]["resources"] + "/" + key)
 
             if not os.path.isfile(resPath):
                 mkLoop(os.path.dirname(resPath))
@@ -543,11 +552,16 @@ def launch(version, name, modpack=False, memory=1):
         getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "net.minecraft.client.main.Main",
         mcArguments(version).format(auth_player_name=name, version_name=vver,
-            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + gp),
+            game_directory=os.path.normpath(getLauncher()["path"]["game"]),
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=getVerData(version)["assets"],
-            auth_uuid=getuuid(name), auth_access_token=currToken, user_type="mojang", version_type=vtype,
-            user_properties="{}", auth_session=currToken, game_assets=getLauncher()["path"]["assets"])
+            auth_uuid=currUuid,
+            auth_access_token=currToken,
+            user_type="mojang",
+            version_type=vtype,
+            user_properties="{}", 
+            auth_session=currToken, 
+            game_assets=getLauncher()["path"]["legacy"])
     ])
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
