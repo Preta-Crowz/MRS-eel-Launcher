@@ -35,7 +35,10 @@ stream.setFormatter(formatter)
 logger.addHandler(file)
 logger.addHandler(stream)
 rpc = pypresence.Presence(490596975457337374)
-rpc.connect()
+try:
+    rpc.connect()
+except pypresence.exceptions.InvalidPipe:
+    print("discord not running")
 currToken = False
 currUuid = False
 
