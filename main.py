@@ -550,14 +550,12 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1ReservePercent=20",
         "-XX:MaxGCPauseMillis=50",
         "-XX:G1HeapRegionSize=32M",
-        #"-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
+        "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "-cp",
         getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "net.minecraft.client.main.Main",
-        mcArguments(version).format(
-            auth_player_name=name,
-            version_name=vver,
-            game_directory=os.path.normpath(getLauncher()["path"]["game"] + "/" + gp),
+        mcArguments(version).format(auth_player_name=name, version_name=vver,
+            game_directory=os.path.normpath(getLauncher()["path"]["game"]),
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=getVerData(version)["assets"],
             auth_uuid=currUuid,
@@ -572,18 +570,8 @@ def launch(version, name, modpack=False, memory=1):
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
     rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
-
     with mc.stdout as gameLog:
-        while True:
-            try:
-                line = gameLog.readline()
-                if not line:
-                    break
-
-                info(line)
-            except:
-                pass
-
+        logOutput(gameLog)
     if mc.returncode:
         warn(f"Client returned {mc.returncode}!")
     return mc.returncode
