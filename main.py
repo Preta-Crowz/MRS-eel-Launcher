@@ -378,7 +378,7 @@ def assetsCheck(version, legacy=0):
     return True
 
 
-def downloadResources(index):
+def downloadAssets(index):
     isMapResource = False
     m = index.get("map_to_resources")
     if m and m == "true":
