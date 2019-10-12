@@ -40,7 +40,6 @@ try:
 except pypresence.exceptions.InvalidPipe:
     print("discord not running")
 currToken = False
-currUuid = False
 
 baseDir = os.path.dirname(os.path.realpath(__file__))
 launcher = {
@@ -176,6 +175,9 @@ def refreshToken():
     currToken = auth_token.access_token
     return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
 
+def getuuid(name):
+    r = requests.get("https://api.mojang.com/users/profiles/minecraft/" + name).text
+    return json.loads(r)["id"]
 
 updateRPC(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space',
            start=int(time.time()))
@@ -537,7 +539,7 @@ def launch(version, name, modpack=False, memory=1):
         downloadAssetsIndex(vver)
 
     assetVer = loadAssetsIndex(version)
-    downloadResources(assetVer)
+    downloadAssets(assetVer)
 
 
     if not libCheck(vver):
@@ -567,7 +569,7 @@ def launch(version, name, modpack=False, memory=1):
             game_directory=os.path.normpath(getLauncher()["path"]["game"]),
             assets_root=getLauncher()["path"]["assets"],
             assets_index_name=getVerData(version)["assets"],
-            auth_uuid=currUuid,
+            auth_uuid=getuuid(name),
             auth_access_token=currToken,
             user_type="mojang",
             version_type=vtype,
