@@ -81,6 +81,13 @@ launcher = {
     }
 }
 
+def updateRPC(*args,**kargs):
+    global rpc
+    try:
+        return rpc.update(*args,**kargs)
+    except:
+        pass
+
 eel.init('page')
 
 
@@ -145,7 +152,7 @@ def login(mcid, mcpw):
         username = auth_token.profile.name
         info('Logined to ' + username)
         global rpc
-        rpc.update(state='Selectting a Modpack', details='Logined to ' + username, large_image='favicon',
+        updateRPC(state='Selectting a Modpack', details='Logined to ' + username, large_image='favicon',
                    large_text='Mystic Red Space')
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
@@ -170,7 +177,7 @@ def refreshToken():
     return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
 
 
-rpc.update(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space',
+updateRPC(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon', large_text='Mystic Red Space',
            start=int(time.time()))
 
 
@@ -568,7 +575,7 @@ def launch(version, name, modpack=False, memory=1):
     ])
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
-    rpc.update(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
+    updateRPC(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
     with mc.stdout as gameLog:
         logOutput(gameLog)
