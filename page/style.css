@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Nanum Gothic", sans-serif;
-    background: #34495e;
+    background: #f7f9fc;
     color: white;
     height: 100vh;
     display: flex;
@@ -64,7 +64,7 @@ body {
     border-color: #2ecc71;
 }
 
-.box input[type = "button"],#launch,#logout {
+.box input[type = "button"],#launch,#logout,#vanilla,#modpack,#mplist {
     background: none;
     margin: 20px auto;
     text-align: center;
