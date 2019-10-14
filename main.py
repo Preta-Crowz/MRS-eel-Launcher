@@ -12,7 +12,8 @@ import threading
 import time
 import zipfile
 import shutil
-
+import sys
+from cefpython3 import cefpython as cef
 import pycraft
 import pycraft.exceptions as pex
 from pycraft import authentication
@@ -86,53 +87,13 @@ def updateRPC(*args,**kargs):
     except:
         pass
 
-eel.init('page')
-
-
-@eel.expose
-def close():
-    exit()
-
-
-@eel.expose
-def getLauncher():
-    global launcher
-    return launcher
-
-
-@eel.expose
-def debug(data):
-    eel.debug(data)
-    return logger.debug(data)
-
-
-@eel.expose
-def info(data):
-    eel.info(data)
-    return logger.info(data)
-
-
-@eel.expose
-def warn(data):
-    eel.warn(data)
-    return logger.warn(data)
-
-
-@eel.expose
-def error(data):
-    eel.error(data)
-    return logger.error(data)
-
-
-@eel.expose
-def fatal(data):
-    eel.fatal(data)
-    return logger.fatal(data)
-
-
 try:
-    mainThread = threading.Thread(target=eel.start, args=('login.html', 'log.html'), kwargs={'size': (1200, 800)})
-    mainThread.start()
+    sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
+    cef.Initialize()
+    cef.CreateBrowserSync(url="file://{}/page/login.html".format(os.getcwd()),
+                          window_title="MRS Launcher",settings={'web_security_disabled':True})
+    cef.MessageLoop()
+    cef.Shutdown()
 except OSError:
     pass
 
