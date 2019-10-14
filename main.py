@@ -521,7 +521,7 @@ def launch(version, name, modpack=False, memory=1):
     Legacy = isLegacy(vver)
 
     if Legacy:
-        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType())
+        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType() + ".zip")
         if not os.path.exists(path):
             download(path, getLauncher()["url"]["native"].format(os=osType()))
         extract(path)
