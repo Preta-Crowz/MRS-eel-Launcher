@@ -74,8 +74,7 @@ launcher = {
         'info': 'https://api.mysticrs.tk/modpack',
         'white': 'https://api.mysticrs.tk/whitelist',
         'mpass': 'https://account.mojang.com/password',
-        'runtime': 'https://files.mysticrs.tk/{os}/runtime.zip',
-        'native': 'https://files.mysticrs.tk/native-{os}.zip',
+        'osfolder': 'https://files.mysticrs.tk/{os}/',
         'file': 'https://files.mysticrs.tk/'
     }
 }
@@ -521,9 +520,9 @@ def launch(version, name, modpack=False, memory=1):
     Legacy = isLegacy(vver)
 
     if Legacy:
-        path = os.path.normpath(getLauncher()["path"]["data"] + "/native-" + osType() + ".zip")
+        path = os.path.normpath(getLauncher()["path"]["data"] + "/natives.zip")
         if not os.path.exists(path):
-            download(path, getLauncher()["url"]["native"].format(os=osType()))
+            download(path, getLauncher()["url"]["osfolder"].format(os=osType())+"/natives.zip")
         extract(path)
 
     if not os.path.exists(getRuntime(True)):
@@ -590,6 +589,6 @@ def launch(version, name, modpack=False, memory=1):
 def downloadRuntime():
     launcher = getLauncher()
     path = os.path.normpath(launcher["path"]["temp"]+"/runtime.zip")
-    download(path, launcher['url']['runtime'].format(os=osType()))
+    download(path, launcher['url']['osfolder'].format(os=osType())+"/runtime.zip")
     with zipfile.ZipFile(path) as f:
         f.extractall(os.path.normpath(launcher["path"]["runtime"]))
