@@ -7,11 +7,11 @@ import platform
 import pypresence
 import re
 import requests
+import shutil
 import subprocess
 import threading
 import time
 import zipfile
-import shutil
 
 import pycraft
 import pycraft.exceptions as pex
