@@ -150,7 +150,7 @@ def login(mcid, mcpw):
         username = auth_token.profile.name
         info('Logined to ' + username)
         global rpc
-        updateRPC(state='Selectting a Modpack', details='Logined to ' + username, large_image='favicon',
+        updateRPC(state='Selecting a Modpack', details='Logined to ' + username, large_image='favicon',
                    large_text='Mystic Red Space')
     except pex.YggdrasilError:
         error("Failed to login with " + mcid)
