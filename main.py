@@ -38,7 +38,7 @@ rpc = pypresence.Presence(490596975457337374)
 try:
     rpc.connect()
 except pypresence.exceptions.InvalidPipe:
-    print("discord not running")
+    warn("Discord is not running, rpc will be disabled!")
 currToken = False
 
 baseDir = os.path.dirname(os.path.realpath(__file__))
@@ -81,10 +81,15 @@ launcher = {
 
 def updateRPC(*args,**kargs):
     global rpc
+    if rpc is None:
+        try:
+            rpc = pypresence.Presence(490596975457337374)
+        except:
+            return
     try:
         return rpc.update(*args,**kargs)
     except:
-        pass
+        return
 
 eel.init('page')
 
