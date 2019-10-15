@@ -4,6 +4,7 @@ import pycraft
 import pycraft.exceptions as pex
 from pycraft import authentication
 from cefpython3 import cefpython as cef
+import aiohttp
 
 def isTokenVaild():
     auth_token = pycraft.AuthenticationToken(browser.ExecuteFunction('loadToken'))

@@ -2,3 +2,4 @@ requests
 https://github.com/qwertyquerty/pypresence/archive/master.zip
 https://github.com/ChrisKnott/Eel/archive/master.zip
 cefpython3==66.0
+aiohttp[speedups]
