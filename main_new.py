@@ -10,20 +10,20 @@ def isTokenVaild():
     print(auth_token)
     return bool(auth_token.validate())
     
-def login(mcid, mcpw):
+def login(mcid, mcpw , js_callback=None):
     try:
         if mcid == "" or mcpw == "":
             warn("Invalid ID or Password!")
         auth_token = pycraft.authentication.AuthenticationToken()
         auth_token.authenticate(mcid, mcpw)
         username = auth_token.profile.name
-        info('Logined to ' + username)
+        print('Logined to ' + username)
     except pex.YggdrasilError:
-        error("Failed to login with " + mcid)
+        print("Failed to login with " + mcid)
         return False
     global currToken
     currToken = auth_token.access_token
-    return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
+    js_callback.Call([auth_token.profile.name, auth_token.client_token, auth_token.access_token],os.getcwd())
 
 #sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
 cef.Initialize()
