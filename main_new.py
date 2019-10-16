@@ -22,6 +22,46 @@ now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-', '')
 ntime = now[11:17].replace(':', '')
 now = ndate + '_' + ntime
+currToken = False
+
+baseDir = os.path.dirname(os.path.realpath(__file__))
+launcher = {
+    'name': 'MRS Minecraft Launcher',
+    'cn': 'ZERO',
+    'ver': {
+        'major': 0,
+        'minor': 0,
+        'patch': 0,
+        'build': 0,
+        'str': "0.0.0.0"
+    },
+    'path': {
+        'main': baseDir,
+        'temp': os.path.normpath(baseDir + '/temp'),
+        'game': os.path.normpath(baseDir + '/games'),
+        'runtime': os.path.normpath(baseDir + '/runtime'),
+        'license': os.path.normpath(baseDir + '/LICENSE'),
+        'updater': os.path.normpath(baseDir + '/updater.py'),
+        'data': os.path.normpath(baseDir + '/data'),
+        'mclib': os.path.normpath(baseDir + '/lib'),
+        'mcver': os.path.normpath(baseDir + '/versions'),
+        'assets': os.path.normpath(baseDir + '/assets'),
+        'index' : os.path.normpath(baseDir + '/assets/indexes'),
+        'object' : os.path.normpath(baseDir + '/assets/objects'),
+        'legacy' : os.path.normpath(baseDir + '/assets/virual/legacy'),
+        'resources' : os.path.normpath(baseDir + '/resources')
+    },
+    'url': {
+        'vers': 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
+        'list': 'https://api.mysticrs.tk/list',
+        'info': 'https://api.mysticrs.tk/modpack',
+        'white': 'https://api.mysticrs.tk/whitelist',
+        'mpass': 'https://account.mojang.com/password',
+        'osfolder': 'https://files.mysticrs.tk/{os}/',
+        'file': 'https://files.mysticrs.tk/'
+    }
+}
+
 def info(_):
     pass
 def warn(_):
@@ -172,7 +212,7 @@ def downloadAssets(index):
 
         if not os.path.isfile(hashPath):
             info("Downloading " + key + "(" + str(now) + "/" + str(count) + ")")
-            download(hashUrl, hashPath)
+            download(hashPath, hashUrl)
 
         if isVirtual:
             resPath = os.path.normpath(getLauncher()["path"]["object"] + "/" + key)
@@ -297,6 +337,10 @@ def getLibs(version):
                     pass
 
     return ";".join(libs)
+    
+def getLauncher():
+    global launcher
+    return launcher
 
 def launch(version, name, modpack=False, memory=1):
     gp = modpack if modpack else version

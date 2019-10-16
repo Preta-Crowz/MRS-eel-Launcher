@@ -18,7 +18,7 @@
     }
 
     $("#launch").on("click", function (event) {
-        return eel.launch($("#ver").val(), $.cookie("name"))((n) => {
+        return launch($("#ver").val(), $.cookie("name"))((n) => {
             return n
         })
     });
