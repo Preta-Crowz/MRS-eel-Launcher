@@ -34,7 +34,7 @@
         }
 
         if($.cookie("save") == "y"){
-            if(isTokenVaild()){
+            if(isTokenVaild(loadToken())){
                 $('#saveInfo').click()
                 saveToken(refreshToken())
             }
