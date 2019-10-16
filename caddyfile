@@ -1,0 +1,10 @@
+localhost:12345
+gzip
+root {%pagedir%}
+index login.html
+mime {
+	.png image/png
+	.js application/javascript
+	.json application/json
+	.css text/css
+}
