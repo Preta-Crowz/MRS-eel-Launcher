@@ -2,7 +2,6 @@
 <head>
     <meta charset="utf-8">
     <link href="style.css" rel="stylesheet">
-    <script src="/eel.js" type="text/javascript"></script>
     <script src="/jquery.js" type="text/javascript"></script>
     <script src="/jquery.cookie.js" type="text/javascript"></script>
 </head>
@@ -14,14 +13,12 @@
     <input form="lform" id="debug" name="debug" type="button" value="디버그 메뉴">
 </form>
 <script type="text/javascript">
-    eel.expose(getToken);
-
     function getToken() {
         return $.cookie("token")
     }
 
     $("#launch").on("click", function (event) {
-        return eel.launch($("#ver").val(), $.cookie("name"))((n) => {
+        return launch($("#ver").val(), $.cookie("name"))((n) => {
             return n
         })
     });

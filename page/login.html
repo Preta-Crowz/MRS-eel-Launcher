@@ -13,39 +13,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 	<script type="text/javascript">
-        function saveToken(data, dir) {
+        function saveToken(data) {
             $.removeCookie("save")
             $.removeCookie("name")
+			$.removeCookie("uuid")
             $.removeCookie("client")
             $.removeCookie("access")
             if($('#saveInfo')[0].checked){
                 $.cookie("save", "y", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
                 $.cookie("name", data[0], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("client", data[1], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
-                $.cookie("access", data[2], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
+				$.cookie("uuid", data[1], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
+                $.cookie("client", data[2], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
+                $.cookie("access", data[3], {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
             } else {
                 $.cookie("save", "n", {expires: new Date(2100, 1, 1, 0, 0, 0), path: "/", domain: "localhost"})
                 $.cookie("name", data[0], {path: "/", domain: "localhost"})
-                $.cookie("client", data[1], {path: "/", domain: "localhost"})
-                $.cookie("access", data[1], {path: "/", domain: "localhost"})
+				$.cookie("uuid", data[1], {path: "/", domain: "localhost"})
+                $.cookie("client", data[2], {path: "/", domain: "localhost"})
+                $.cookie("access", data[3], {path: "/", domain: "localhost"})
             }
-            if (data[1]) window.location.href = dir+"/page"+"/debug.html"
-            return data[1]
+            if (data[2]) window.location.href = "/debug.html"
+            return data[2]
         }
 
         if($.cookie("save") == "y"){
-            if(isTokenVaild()){
+            if(isTokenVaild(loadToken())){
                 $('#saveInfo').click()
                 saveToken(refreshToken())
             }
-            window.location.href = dir+"/page"+"/debug.html"
+            window.location.href = "/debug.html"
         }
 
         function loadToken(){
             try {
-                return [$.cookie("name"), $.cookie("access"), $.cookie("client")]
+                return [$.cookie("name"), $.cookie("uuid"), $.cookie("access"), $.cookie("client")]
             } catch(e) {
-                return [undefined, undefined, undefined]
+                return [undefined, undefined, undefined, undefined]
             }
         }
     </script>
