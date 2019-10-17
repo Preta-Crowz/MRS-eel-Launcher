@@ -450,7 +450,8 @@ elif osType() == "linux":
 cef.Initialize(settings={'cache_path':os.getcwd()+r'\cache'})
 browser = cef.CreateBrowserSync(url="http://localhost:12345/login.html",
                       window_title="MRS Launcher")
-cef.WindowUtils.SetIcon
+if osType() == "windows":
+    cef.WindowUtils.SetIcon
 bindings = cef.JavascriptBindings()
 bindings.SetFunction('isTokenVaild',isTokenVaild)
 bindings.SetFunction('login',login)
