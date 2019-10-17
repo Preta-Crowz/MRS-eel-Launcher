@@ -89,10 +89,10 @@ def mcArguments(version):
 def libDir(o):
     path = o["path"]
     if path.find("lwjgl") + 1:
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + os.pathsep + \
                os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
     elif path.find("java-objc-bridge") + 1 and osType == "osx":
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + os.pathsep + \
                os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
     return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path)
 
@@ -331,14 +331,14 @@ def getLibs(version):
     for lib in data["libraries"]:
         if not "artifact" in lib["downloads"].keys(): continue
         libs.append(libDir(lib["downloads"]["artifact"]))
-        for l in libDir(lib["downloads"]["artifact"]).split(";"):
+        for l in libDir(lib["downloads"]["artifact"]).split(os.pathsep):
             if (l.find("natives") != -1):
                 try:
                     extract(l)
                 except:
                     pass
 
-    return ";".join(libs)
+    return os.pathsep.join(libs)
     
 def getLauncher():
     global launcher
@@ -397,7 +397,7 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "-cp",
-        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
+        getLibs(version) + os.pathsep + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "net.minecraft.client.main.Main",
         mcArguments(version).format(auth_player_name=name, version_name=vver,
             game_directory=os.path.normpath(getLauncher()["path"]["game"]),
