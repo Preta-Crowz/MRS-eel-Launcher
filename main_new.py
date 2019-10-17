@@ -107,7 +107,6 @@ def saveToFile(fdir,data):
         raise TypeError("Unsupported Type")
     mkLoop(os.path.dirname(fdir))
     return open(fdir, "wb").write(data)
->>>>>>> f12105be709d7487f3ab1255fc9e3735dfec2184
 
 def loadFromWeb(url):
     return json.loads(requests.get(url).text)
