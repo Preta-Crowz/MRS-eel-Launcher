@@ -436,7 +436,15 @@ def login(mcid, mcpw ,js_callback=None):
 
 #sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
 os.environ["pagedir"] = os.getcwd()+r'\page'
-server = Popen(["caddy","-conf","caddyfile"])
+if osType() == "windows":
+    os.environ["pagedir"] = os.getcwd()+r'\page'
+    server = Popen(["./caddy_win","-conf","caddyfile"])
+elif osType() == "osx":
+    os.environ["pagedir"] = os.getcwd()+r'/page'
+    server = Popen(["./caddy_mac","-conf","caddyfile"])
+elif osType() == "linux":
+    os.environ["pagedir"] = os.getcwd()+r'/page'
+    server = Popen(["./caddy_linux","-conf","caddyfile"])
 cef.Initialize(settings={'cache_path':os.getcwd()+r'\cache'})
 browser = cef.CreateBrowserSync(url="http://localhost:12345/login.html",
                       window_title="MRS Launcher")
