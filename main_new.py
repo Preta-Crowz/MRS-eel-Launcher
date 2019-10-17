@@ -149,7 +149,8 @@ def mkLoop(fdir):
 def download(fdir,url):
     dirpath = os.path.dirname(fdir)
     mkLoop(dirpath)
-
+    with open("log.log","a") as ab:
+        ab.write(fdir+"\r\n")
     response = requests.get(url, stream=True)
     if int(response.status_code / 100) is not 2:
         return  # TODO : Raise Exception
@@ -409,7 +410,8 @@ def launch(version, name, modpack=False, memory=1):
             auth_session=currToken, 
             game_assets=getLauncher()["path"]["legacy"])
     ])
-    mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
+    with open("log.log","a") as ab:
+        mc = subprocess.Popen(cmd, stdout=ab, stderr=subprocess.STDOUT, encoding="utf8")
     updateRPC(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
     with mc.stdout as gameLog:
