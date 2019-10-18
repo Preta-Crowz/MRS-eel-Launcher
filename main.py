@@ -216,7 +216,7 @@ def getLibs(version):
 
 
 def getRuntime(noArgs=False):
-    bn = "java" if osType == "osx" else "javaw"
+    bn = "java" if osType() == "osx" else "javaw"
     runtime = os.path.normpath(getLauncher()["path"]["runtime"] + "/bin/" + bn)
     if noArgs:
         return runtime + (".exe" if osType() == "windows" else "")
