@@ -1,6 +1,6 @@
 from inspect import signature
 
-class event:
+class Event:
     def __init__(self):
         self.funcs = list()
 
@@ -34,3 +34,8 @@ class event:
             else:
                 raise ValueError("handler must have no more than two parameters")
 
+
+class ProgressEventArgs:
+    def __init__(self, current, allcount):
+        self.current = current
+        self.allcount = allcount
