@@ -414,8 +414,6 @@ def launch(version, name, modpack=False, memory=1):
         mc = subprocess.Popen(cmd, stdout=ab, stderr=subprocess.STDOUT, encoding="utf8")
     updateRPC(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
                start=int(time.time()))
-    with mc.stdout as gameLog:
-        logOutput(gameLog)
     if mc.returncode:
         warn(f"Client returned {mc.returncode}!")
     return mc.returncode
