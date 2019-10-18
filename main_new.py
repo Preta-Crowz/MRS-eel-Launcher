@@ -17,7 +17,7 @@ import pycraft.exceptions as pex
 from pycraft import authentication
 from cefpython3 import cefpython as cef
 from subprocess import Popen
-import setup
+import init
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-', '')
 ntime = now[11:17].replace(':', '')
