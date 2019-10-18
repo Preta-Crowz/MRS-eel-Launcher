@@ -382,7 +382,7 @@ def launch(version, name, modpack=False, memory=1):
     if not libCheck(vver):
         downloadLibs(vver)
 
-    cmd = [
+    cmd = " ".join([
         getRuntime(),
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
@@ -409,7 +409,7 @@ def launch(version, name, modpack=False, memory=1):
             user_properties="{}", 
             auth_session=currToken, 
             game_assets=getLauncher()["path"]["legacy"])
-    ]
+    ]).split()
     with open("log.log","a") as ab:
         mc = subprocess.Popen(cmd, stdout=ab, stderr=subprocess.STDOUT, encoding="utf8")
     updateRPC(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
