@@ -13,9 +13,9 @@ import threading
 import time
 import zipfile
 
-import pycraft
-import pycraft.exceptions as pex
-from pycraft import authentication
+import minecraft
+import minecraft.exceptions as mcException
+from minecraft import authentication
 
 import setup
 logger = logging.Logger("MRS")
@@ -150,14 +150,14 @@ def login(mcid, mcpw):
     try:
         if mcid == "" or mcpw == "":
             warn("Invalid ID or Password!")
-        auth_token = pycraft.authentication.AuthenticationToken()
+        auth_token = minecraft.authentication.AuthenticationToken()
         auth_token.authenticate(mcid, mcpw)
         username = auth_token.profile.name
         info('Logined to ' + username)
         global rpc
         updateRPC(state='Selecting a Modpack', details='Logined to ' + username, large_image='favicon',
                    large_text='Mystic Red Space')
-    except pex.YggdrasilError:
+    except mcException.YggdrasilError:
         error("Failed to login with " + mcid)
         return False
     global currToken
@@ -167,14 +167,14 @@ def login(mcid, mcpw):
 
 @eel.expose
 def isTokenVaild():
-    auth_token = pycraft.AuthenticationToken(*(eel.loadToken()()))
+    auth_token = minecraft.AuthenticationToken(*(eel.loadToken()()))
     return bool(auth_token.validate())
 
 
 @eel.expose
 def refreshToken():
     global currToken, auth_token
-    auth_token = pycraft.AuthenticationToken(*(eel.loadToken()()))
+    auth_token = minecraft.AuthenticationToken(*(eel.loadToken()()))
     auth_token.refresh()
     currToken = auth_token.access_token
     return [auth_token.profile.name, auth_token.client_token, auth_token.access_token]
@@ -190,10 +190,10 @@ updateRPC(state='Developing', details='MRS NEW LAUNCHER', large_image='favicon',
 def libDir(o):
     path = o["path"]
     if path.find("lwjgl") + 1:
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + os.pathsep + \
                os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
     elif path.find("java-objc-bridge") + 1 and osType == "osx":
-        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + ";" + \
+        return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path) + os.pathsep + \
                os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path.replace(".jar", "-natives-"+osType()+".jar"))
     return os.path.normpath(getLauncher()["path"]["mclib"] + "/" + path)
 
@@ -205,14 +205,14 @@ def getLibs(version):
     for lib in data["libraries"]:
         if not "artifact" in lib["downloads"].keys(): continue
         libs.append(libDir(lib["downloads"]["artifact"]))
-        for l in libDir(lib["downloads"]["artifact"]).split(";"):
+        for l in libDir(lib["downloads"]["artifact"]).split(os.pathsep):
             if (l.find("natives") != -1):
                 try:
                     extract(l)
                 except:
                     pass
 
-    return ";".join(libs)
+    return os.pathsep.join(libs)
 
 
 def getRuntime(noArgs=False):
@@ -553,7 +553,7 @@ def launch(version, name, modpack=False, memory=1):
 
 
     info("Launching " + modpack + "!")
-    cmd = " ".join([
+    cmd = [
         getRuntime(),
         "-Djava.library.path=" + os.path.normpath(getLauncher()["path"]["main"] + "/extracts"),
         "-Dminecraft.launcher.brand=mrs-eel-launcher",
@@ -567,7 +567,7 @@ def launch(version, name, modpack=False, memory=1):
         "-XX:G1HeapRegionSize=32M",
         "-Dlog4j.configurationFile=" + os.path.normpath(getLauncher()["path"]["assets"] + "/client-1.12.xml"),
         "-cp",
-        getLibs(version) + ";" + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
+        getLibs(version) + os.pathsep + os.path.normpath(getLauncher()["path"]["mcver"] + "/" + vver + ".jar"),
         "net.minecraft.client.main.Main",
         mcArguments(version).format(auth_player_name=name, version_name=vver,
             game_directory=os.path.normpath(getLauncher()["path"]["game"]),
@@ -580,7 +580,7 @@ def launch(version, name, modpack=False, memory=1):
             user_properties="{}", 
             auth_session=currToken, 
             game_assets=getLauncher()["path"]["legacy"])
-    ])
+    ]
     debug(cmd)
     mc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding="utf8")
     updateRPC(state='Playing MRS', details=modpack, large_image='favicon', large_text='Mystic Red Space',
