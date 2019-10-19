@@ -5,12 +5,14 @@ from urllib.request import urlretrieve
 from event import Event
 from event import ProgressEventArgs
 import launcher
+import util
 
 
 def getlist():
     return requests.get(launcher.url_list).json()
 
 
+context = ssl._create_unverified_context()
 class ModPackDownloader:
     def __init__(self):
         self.event = Event()
@@ -33,7 +35,7 @@ class ModPackDownloader:
             if not has_file or local != file["md5"]:
                 if not os.path.isdir(dirpath):
                     os.makedirs(dirpath)
-                urlretrieve(file["url"], filepath)
+                util.download(file["url"], filepath)
 
 
     def fire(self, name, current, allcount):

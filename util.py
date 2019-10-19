@@ -20,7 +20,7 @@ def download(url, path):
     dirpath = os.path.dirname(path)
     os.makedirs(dirpath)
 
-    response = requests.get(url, stream=True)
+    response = requests.get(url, stream=True, verify=False)
     if int(response.status_code / 100) is not 2:
         return  # TODO : Raise Exception
 
