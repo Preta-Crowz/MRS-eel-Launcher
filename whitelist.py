@@ -1,57 +1,63 @@
 import requests
 import json
-from os.path import combine, isfile
-from os import listdir
+from os.path import isfile, isdir, normpath
+from os import listdir, remove
 import util
+import launcher
 
 
-class whitelist:
+class WhiteList:
     def __init__(self, root, name):
-        r = requests.get(url="https://api.mysticrs.tk/whitelist", params={'name'}:name)
-        json = json.loads(r)
+        jarr = requests.get(url=launcher.url_whitelist, params={'name':name}).json()
 
         dirs = set()
         files = dict()
 
-        for item in json:
-            path = combine(item["path"], item["name"])
+        for i in range(0, len(jarr)):
+            item = jarr[i]
+            path = normpath(item["path"] + item["name"])
             
             if item["dir"]:
-                dirs.append(path)
+                dirs.add(path)
             else:
-                files.append(path, item["md5"])
+                files[path] = item["md5"]
 
         self.dirs = dirs
         self.files = files
         self.root = root
 
 
-    def getfiles(self, path):
+    def getfiles(self):
+        return self.getfiles_r(self.root)
+
+
+    def getfiles_r(self, path):
         files = dict()
 
-        if path in dirs:
+        if path in self.dirs:
             return files
 
-        absolute = combine(self.root, path)
+        absolute = normpath(path)
 
         for item in listdir(absolute):
-            filepath = combine(absolute, item)
+            filepath = normpath(absolute + "/" + item)
             if isfile(filepath):
-                files.append(filepath, util.md5(filepath))
+                fhash = util.md5(filepath)
+                files[filepath] = fhash
             else:
-                files.extend(getfiles(self, filepath))
+                files.update(self.getfiles_r(filepath))
 
         return files
 
 
     def filtering(self, files):
         for key, value in files.items():
-            path = combine(self.root, key)
+            path = normpath(self.root + "/" + key)
             fhash = files.get(path)
             
             if (fhash != None) and (value == None or value == "" or value == fhash):
                 files.remove(path)
 
         for v in files.values():
-            os.remove(v)
+            remove(v)
 

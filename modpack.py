@@ -4,37 +4,37 @@ import requests
 from urllib.request import urlretrieve
 from event import Event
 from event import ProgressEventArgs
+import launcher
 
 
 def getlist():
-    r = requests.get("https://api.mysticrs.tk/list")
-    return json.loads(r)
+    return requests.get(launcher.url_list).json()
 
 
 class ModPackDownloader:
     def __init__(self):
-        self.event = event()
+        self.event = Event()
 
 
-    def download(self, root, localfiles):
-        r = requests.get(url="https://api.mysticrs.tk/modpack", params={"name":name})
-        json = json.loads(r)
+    def download(self, name:str, root:str, localfiles:dict):
+        jarr = requests.get(url=launcher.url_modpack, params={"name":name}).json()
         
-        count = len(json)
+        count = len(jarr)
         for i in range(0, count):
-            file = json[i]
-            self.fire(i + 1, count)
+            file = jarr[i]
+            self.fire(file["name"], i + 1, count)
             
-            dirpath = os.path.normpath(os.path.combine(root, file["dir"]))
-            filepath = os.path.normpath(os.path.combine(dirpath, file["name"]))
+            dirpath = os.path.normpath(root + file["dir"])
+            filepath = os.path.normpath(dirpath + "/" + file["name"])
 
             local = localfiles.pop(filepath, None)
             has_file = local != None
-            
+
             if not has_file or local != file["md5"]:
-                os.makedirs(dirpath)
-                urlretreive(file["url"], filepath)
+                if not os.path.isdir(dirpath):
+                    os.makedirs(dirpath)
+                urlretrieve(file["url"], filepath)
 
 
-    def fire(self, current, allcount):
-        self.event.fire(self, ProgressEventArgs(current, allcount))
+    def fire(self, name, current, allcount):
+        self.event.fire(self, ProgressEventArgs(name, current, allcount))

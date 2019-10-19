@@ -36,6 +36,7 @@ class Event:
 
 
 class ProgressEventArgs:
-    def __init__(self, current, allcount):
+    def __init__(self, name, current, allcount):
+        self.name = name
         self.current = current
         self.allcount = allcount
