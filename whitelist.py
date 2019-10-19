@@ -34,6 +34,9 @@ class WhiteList:
     def getfiles_r(self, path):
         files = dict()
 
+        if not isdir(path):
+            return files
+
         if path in self.dirs:
             return files
 
