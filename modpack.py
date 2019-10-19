@@ -12,7 +12,6 @@ def getlist():
     return requests.get(launcher.url_list).json()
 
 
-context = ssl._create_unverified_context()
 class ModPackDownloader:
     def __init__(self):
         self.event = Event()
