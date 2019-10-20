@@ -46,8 +46,10 @@ def start_game(pack, session):
     pml.downloadEventHandler = minecraft_eventhandler
 
     cmd = pml.startProfile(pack['profile'],
-                            xmx_mb=1024,
+                            xmx_mb=4096,
                             session=session)
+
+    print(cmd)
 
     mc = subprocess.Popen(getRuntime() + " " + cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=pml.getGamePath(), shell=True)
 
