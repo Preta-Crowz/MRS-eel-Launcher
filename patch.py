@@ -49,7 +49,15 @@ def start_game(pack, session):
                             xmx_mb=1024,
                             session=session)
 
-    subprocess.Popen(getRuntime() + " " + cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=pml.getGamePath(), shell=True)
+    mc = subprocess.Popen(getRuntime() + " " + cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=pml.getGamePath(), shell=True)
+
+    # write output
+    with mc.stdout as gameLog:
+        while True:
+            line = gameLog.readline()
+            if not line:
+                break
+            print(line)
 
     
 def minecraft_eventhandler(x):

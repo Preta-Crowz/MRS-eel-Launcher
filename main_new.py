@@ -9,6 +9,7 @@ import requests
 import threading
 import time
 import sys
+import threading
 import pycraft
 import pycraft.exceptions as pex
 import modpack
@@ -48,13 +49,22 @@ def eventhandler(x):
 
 
 def launch(version, name):
-    patch.download_event.clear_handler()
-    patch.download_event.add_handler(eventhandler)
-
     session = mlogin.session()
     session.access_token = currToken
     session.uuid = "asdf"
     session.username = name
+
+    t = threading.Thread(target=start, args=(version, session))
+    t.daemon = True
+    t.start()
+
+    updateRPC(state='Playing MRS', details="", large_image='favicon', large_text='Mystic Red Space',
+              start=int(time.time()))
+
+
+def start(version, session):
+    patch.download_event.clear_handler()
+    patch.download_event.add_handler(eventhandler)
 
     packs = modpack.getlist()
     p = None
@@ -68,9 +78,6 @@ def launch(version, name):
     
     patch.patch_modpack(p["name"])
     patch.start_game(p, session)
-
-    updateRPC(state='Playing MRS', details="", large_image='favicon', large_text='Mystic Red Space',
-              start=int(time.time()))
     
     
 def login(mcid, mcpw ,js_callback=None):

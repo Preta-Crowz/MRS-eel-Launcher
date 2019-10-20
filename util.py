@@ -2,6 +2,7 @@ import hashlib
 import os
 import requests
 import shutil
+import urllib3
 from pmlauncher import mrule
 
 
@@ -16,9 +17,12 @@ def md5(path, blocksize=65536):
     return hasher.hexdigest()
 
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 def download(url, path):
     dirpath = os.path.dirname(path)
-    os.makedirs(dirpath)
+    if not os.path.isdir(dirpath):
+        os.makedirs(dirpath)
 
     response = requests.get(url, stream=True, verify=False)
     if int(response.status_code / 100) is not 2:
