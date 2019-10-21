@@ -2,7 +2,7 @@ import os
 
 def f(path):
     path = os.path.normpath(path)
-    m(os.path.dirname(path)
+    m(os.path.dirname(path))
     return path
 
 def m(path):

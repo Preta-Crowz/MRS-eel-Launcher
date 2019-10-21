@@ -8,6 +8,7 @@ import modpack
 from subprocess import Popen
 from event import Event, ProgressEventArgs
 from pmlauncher import pml, minecraft, mrule, mlaunchoption
+import setting
 
 
 # game start, download modpack
@@ -45,14 +46,14 @@ def start_game(pack, session):
     minecraft.change_assets(launcher.path_assets)
     pml.downloadEventHandler = minecraft_eventhandler
 
-    option = mlaunchoption()
+    option = mlaunchoption.launchoption()
     option.xmx_mb = setting.get("xmx")
     option.session = session
     
     if setting.get("useCustomJVM"):
         option.jvm_arg = setting.get("jvm")
 
-    cmd = pml.startProfile(pack['profile'], option)
+    cmd = pml.startProfile(pack['profile'], launchoption=option)
 
     print(cmd)
 
