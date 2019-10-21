@@ -8,7 +8,7 @@ import launcher
 
 class WhiteList:
     def __init__(self, root, name):
-        self.res = requests.get(url=launcher.url_whitelist, params={'name':name}).decode("utf8")
+        self.res = requests.get(url=launcher.url_whitelist, params={'name':name}).content.decode("utf8")
         jarr = json.loads(self.res)
 
         dirs = set()
@@ -62,6 +62,7 @@ class WhiteList:
             if (fhash != None) and (value == None or value == "" or value == fhash):
                 files.remove(path)
 
-        for v in files.values():
+        for v in files.keys():
+            print(v)
             remove(v)
 

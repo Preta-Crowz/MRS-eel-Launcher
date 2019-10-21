@@ -13,12 +13,14 @@ def getlist():
 
 
 class ModPackDownloader:
-    def __init__(self):
+    def __init__(self, root:str, name:str):
+        self.name = name
+        self.root = root
+        self.res = requests.get(url=launcher.url_modpack, params={"name":name}).content.decode("utf8")
         self.event = Event()
 
 
-    def download(self, name:str, root:str, localfiles:dict):
-        self.res = requests.get(url=launcher.url_modpack, params={"name":name}).decode("utf8")
+    def download(self, localfiles:dict):
         jarr = json.loads(self.res)
 
         count = len(jarr)
@@ -26,7 +28,7 @@ class ModPackDownloader:
             file = jarr[i]
             self.fire(file["name"], i + 1, count)
             
-            dirpath = os.path.normpath(root + file["dir"])
+            dirpath = os.path.normpath(self.root + file["dir"])
             filepath = os.path.normpath(dirpath + "/" + file["name"])
 
             local = localfiles.pop(filepath, None)

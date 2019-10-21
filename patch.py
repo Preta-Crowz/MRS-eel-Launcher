@@ -34,7 +34,7 @@ def getRuntime():
 def patch_modpack(name, force=False):
     p = os.path.normpath(launcher.path_game + "/" + name)
 
-    m = modpack.ModPackDownloader()
+    m = modpack.ModPackDownloader(p, name)
     w = whitelist.WhiteList(p, name)
 
     mpath = os.path.normpath(p + "/modpack.json")
@@ -43,7 +43,7 @@ def patch_modpack(name, force=False):
     if not check_file_equal(mpath, m.res) or not check_file_equal(wpath, w.res) or force:
         files = w.getfiles()
         m.event = download_event
-        m.download(name, p, files)
+        m.download(files)
         w.filtering(files)
 
         util.writefile(mpath, m.res)
@@ -51,6 +51,8 @@ def patch_modpack(name, force=False):
 
 
 def check_file_equal(path, content):
+    if not os.path.isfile(path):
+        return False
     file = util.readfile(path)
     return file == content
 
