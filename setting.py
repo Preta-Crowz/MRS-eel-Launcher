@@ -1,7 +1,7 @@
 import json
 import os
 import launcher
-import codecs
+import util
 
 default_setting = {
     'xmx' : 4096,
@@ -14,10 +14,8 @@ def load():
     global setting_obj
     try:
         if os.path.isfile(launcher.path_setting):
-            f = codecs.open(launcher.path_setting, 'r', encoding='utf8')
-            content = f.read()
+            content = util.readfile(launcher.path_setting)
             setting_obj = json.loads(content)
-            f.close()
         else:
             setting_obj = default_setting
     except:
@@ -43,7 +41,5 @@ def set(key, val):
 
 def save():
     global setting_obj
-    f = codecs.open(launcher.path_setting, 'w', encoding='utf8')
-    f.write(json.dumps(setting_obj))
-    f.close()
+    util.writefile(launcher.path_setting, json.dumps(setting_obj))
 

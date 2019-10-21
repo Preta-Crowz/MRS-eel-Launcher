@@ -4,6 +4,7 @@ import requests
 import shutil
 import urllib3
 from pmlauncher import mrule
+import codes
 
 
 def md5(path, blocksize=65536):
@@ -34,3 +35,17 @@ def download(url, path):
 
 def osType():
     return mrule.osname
+
+
+def readfile(path):
+    f = codes.open(path, 'r', encoding='utf8')
+    content = f.read()
+    f.close()
+    return content
+
+
+def writefile(path, content):
+    f = codes.open(path, 'r', encoding='utf8')
+    f.write(content)
+    f.close()
+
