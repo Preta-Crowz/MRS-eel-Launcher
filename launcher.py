@@ -1,5 +1,10 @@
 import os
 
+def f(path):
+    path = os.path.normpath(path)
+    m(os.path.dirname(path)
+    return path
+
 def m(path):
     path = os.path.normpath(path)
     if not os.path.isdir(path):
@@ -22,11 +27,11 @@ path_main = baseDir
 path_temp = m(baseDir + '/temp')
 path_game = m(baseDir + '/games')
 path_runtime = m(baseDir + '/runtime')
-path_license = baseDir + '/LICENSE'
-path_updater = baseDir + '/updater.py'
+path_license = f(baseDir + '/LICENSE')
+path_updater = f(baseDir + '/updater.py')
 path_data = m(baseDir + '/data')
 path_assets = m(path_data + "/assets")
-path_libraries = m(path_data + "/libraries")
+path_setting = f(baseDir + '/setting.json')
 
 url_list = 'https://api.mysticrs.tk/list'
 url_modpack = 'https://api.mysticrs.tk/modpack'
@@ -37,3 +42,4 @@ url_runtime = 'https://files.mysticrs.tk/{os}/'
 
 # i don't know where this field is used.
 cn = 'zero'
+

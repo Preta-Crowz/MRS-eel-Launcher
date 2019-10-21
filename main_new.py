@@ -20,6 +20,7 @@ from cefpython3 import cefpython as cef
 import launcher
 import util
 import patch
+import setting
 
 
 now = str(datetime.datetime.now())
@@ -111,7 +112,9 @@ bindings.SetFunction('login',login)
 bindings.SetFunction('launch',launch)
 browser.SetJavascriptBindings(bindings)
 cef.MessageLoop()
-server.terminate()
-cef.Shutdown()
 
+# Deinitialize
+server.terminate()
+setting.save()
+cef.Shutdown()
 
