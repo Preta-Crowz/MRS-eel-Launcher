@@ -18,8 +18,9 @@ class ModPackDownloader:
 
 
     def download(self, name:str, root:str, localfiles:dict):
-        jarr = requests.get(url=launcher.url_modpack, params={"name":name}).json()
-        
+        self.res = requests.get(url=launcher.url_modpack, params={"name":name}).decode("utf8")
+        jarr = json.loads(self.res)
+
         count = len(jarr)
         for i in range(0, count):
             file = jarr[i]

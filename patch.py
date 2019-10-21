@@ -14,31 +14,45 @@ import setting
 # game start, download modpack
 download_event = Event()
 
-
-def downloadRuntime():
-    path = os.path.normpath(launcher.path_temp+"/runtime.zip")
-    util.download(launcher.url_runtime.format(os=mrule.osname)+"/runtime.zip", path)
-    with zipfile.ZipFile(path) as f:
-        f.extractall(os.path.normpath(launcher.path_runtime))
-
-
 def getRuntime():
     if mrule.osname == "windows":
         bn = "javaw.exe"
     else:
         bn = "java"
-    return os.path.normpath(launcher.path_runtime + "/bin/" + bn)
+    runtime = os.path.normpath(launcher.path_runtime + "/bin/" + bn)
+
+    if not os.path.isfile(runtime):
+        zippath = os.path.normpath(launcher.path_temp + "/runtime.zip")
+        util.download(launcher.url_runtime.format(os=mrule.osname)+"/runtime.zip", zippath)
+
+        with zipfile.ZipFile(zippath) as f:
+            f.extractall(os.path.normpath(launcher.path_runtime))
+
+    return runtime
 
 
-def patch_modpack(name):
+def patch_modpack(name, force=False):
     p = os.path.normpath(launcher.path_game + "/" + name)
 
-    w = whitelist.WhiteList(p, name)
-    files = w.getfiles()
-
     m = modpack.ModPackDownloader()
-    m.event = download_event
-    m.download(name, p, files)
+    w = whitelist.WhiteList(p, name)
+
+    mpath = os.path.normpath(p + "/modpack.json")
+    wpath = os.path.normpath(p + "/whitelist.json")
+
+    if not check_file_equal(mpath, m.res) or not check_file_equal(wpath, w.res) or force:
+        files = w.getfiles()
+        m.event = download_event
+        m.download(name, p, files)
+        w.filtering(files)
+
+        util.writefile(mpath, m.res)
+        util.writefile(wpath, w.res)
+
+
+def check_file_equal(path, content):
+    file = util.readfile(path)
+    return file == content
 
 
 def start_game(pack, session):

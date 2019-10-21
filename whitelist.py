@@ -8,7 +8,8 @@ import launcher
 
 class WhiteList:
     def __init__(self, root, name):
-        jarr = requests.get(url=launcher.url_whitelist, params={'name':name}).json()
+        self.res = requests.get(url=launcher.url_whitelist, params={'name':name}).decode("utf8")
+        jarr = json.loads(self.res)
 
         dirs = set()
         files = dict()
