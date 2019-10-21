@@ -4,7 +4,7 @@ import requests
 import shutil
 import urllib3
 from pmlauncher import mrule
-import codes
+import codecs
 
 
 def md5(path, blocksize=65536):
@@ -38,14 +38,18 @@ def osType():
 
 
 def readfile(path):
-    f = codes.open(path, 'r', encoding='utf8')
+    f = codecs.open(path, 'r', encoding='utf8')
     content = f.read()
     f.close()
     return content
 
 
 def writefile(path, content):
-    f = codes.open(path, 'r', encoding='utf8')
+    dpath = os.path.dirname(path)
+    if not os.path.isdir(dpath):
+        os.makedirs(dpath)
+
+    f = codecs.open(path, 'w', encoding='utf8')
     f.write(content)
     f.close()
 
