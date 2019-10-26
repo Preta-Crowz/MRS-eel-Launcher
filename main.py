@@ -84,6 +84,7 @@ def updateRPC(*args,**kargs):
     if rpc is None:
         try:
             rpc = pypresence.Presence(490596975457337374)
+            rpc.connect()
         except:
             return
     try:
