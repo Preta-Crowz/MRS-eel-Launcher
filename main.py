@@ -17,7 +17,7 @@ import minecraft
 import minecraft.exceptions as mcException
 from minecraft import authentication
 
-import setup
+import init
 logger = logging.Logger("MRS")
 now = str(datetime.datetime.now())
 ndate = now[2:10].replace('-', '')
