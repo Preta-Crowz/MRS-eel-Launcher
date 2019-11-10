@@ -47,15 +47,17 @@ def isTokenVaild(token):
 
 def eventhandler(x):
     print(f"{x.name} : {x.current} / {x.allcount}")
+    browser.ExecuteFunction("changeFile", x.name)
+    browser.ExecuteFunction("changeProgress", x.allcount, x.current)
 
 
-def launch(version, name):
+def launch(version, force):
     session = mlogin.session()
     session.access_token = currToken
     session.uuid = "asdf"
-    session.username = name
+    session.username = "testeer"
 
-    t = threading.Thread(target=start, args=(version, session))
+    t = threading.Thread(target=start, args=(version, force, session))
     t.daemon = True
     t.start()
 
@@ -63,9 +65,8 @@ def launch(version, name):
               start=int(time.time()))
 
 
-def start(version, session):
-    patch.download_event.clear_handler()
-    patch.download_event.add_handler(eventhandler)
+patch.download_event.add_handler(eventhandler)
+def start(version, force, session):
 
     packs = modpack.getlist()
     p = None
@@ -77,7 +78,7 @@ def start(version, session):
     if p == None:
         raise ValueError("Cannot find modpack")
     
-    patch.patch_modpack(p["name"])
+    patch.patch_modpack(p["name"], force)
     patch.start_game(p, session)
     
     
