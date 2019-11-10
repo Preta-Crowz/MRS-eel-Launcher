@@ -32,7 +32,7 @@
                 $.cookie("client", data[2], {path: "/", domain: "localhost"})
                 $.cookie("access", data[3], {path: "/", domain: "localhost"})
             }
-            if (data[2]) window.location.href = "/debug.html"
+            if (data[2]) window.location.href = "/main.html"
             return data[2]
         }
 
@@ -41,7 +41,7 @@
                 $('#saveInfo').click()
                 saveToken(refreshToken())
             }
-            window.location.href = "/debug.html"
+            window.location.href = "/main.html"
         }
 
         function loadToken(){

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html style="width: 100%;font-family: 'Nanum Gothic', sans-serif;height: 100%;">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>MRS_eel_launcher_1 (2)</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nanum+Gothic&amp;subset=korean">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/Article-Clean.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="assets/css/sidebar.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body style="background-color: #404040;">
+    <div id="sidebar-wrapper">
+        <ul class="nav flex-column shadow sidebar mobile-hid">
+            <li class="nav-item text-center align-self-center mx-auto logo-holder" style="margin-top: 20px;margin-bottom: 20px;"><img class="bg-white border rounded-circle align-self-center my-auto" src="assets/img/remake.png" width="110px" height="110px" style="width: 128px;padding: 9px;height: 128px;"></li>
+            <li class="nav-item"><a class="nav-link text-left text-white py-1 px-0" href="main.html" style="font-family: 'Nanum Gothic', sans-serif;"><i class="fas fa-home mx-3"></i><span class="text-nowrap mx-2">Home</span></a></li>
+            <li class="nav-item"><a class="nav-link active text-left text-white py-1 px-0" href="#" style="font-family: 'Nanum Gothic', sans-serif;"><i class="fas fa-inbox mx-3"></i><span class="text-nowrap mx-2">Modpacks</span></a></li>
+            <li class="nav-item"><a class="nav-link text-left text-white py-1 px-0" href="settings.html" style="font-family: 'Nanum Gothic', sans-serif;"><i class="fas fa-cog mx-3"></i><span class="text-nowrap mx-2">Settings</span></a></li>
+            <li class="nav-item"><a class="nav-link text-left text-white py-1 px-0" href="about.html" style="font-family: 'Nanum Gothic', sans-serif;"><i class="fas fa-info-circle mx-3"></i><span class="text-nowrap mx-2">About</span></a></li>
+            <li class="nav-item mt-auto" style="height: 70px;">
+                <div class="text-left align-items-center align-content-center" style="height: 70px;background-color: #b03112;color: rgb(255,255,255);font-size: 16px;"><img width="32px" height="32px" style="width: 50px;height: 50px;padding: 0px;padding-top: 0px;padding-left: 0px;margin: 10px;"><span style="font-family: 'Nanum Gothic', sans-serif;">djkd</span></div>
+            </li>
+        </ul>
+    </div>
+    <div id="page-content-wrapper">
+        <div style="width: 100%;height: 90px;display: inline-block;">
+            <p id="pack-title-p" style="position: relative;top: 30px;left: 30px;font-size: 2rem;color: white;float: left;">Pack Name</p><button class="btn btn-primary" type="button" style="float: right;margin-top: 30px;margin-right: 30px;" onclick="backClick()">뒤로</button></div>
+        <div style="width: 100%;flex: 1;padding: 30px;"><iframe id="patch-log-iframe" style="width: 100%;height: 100%;" frameBorder="0">No data</iframe></div>
+        <div id="patch-buttons-wrapper" style="width: 100%;height: 70px;display: inline-flex;"><button class="btn btn-primary" type="button" style="width: 100px;height: 40px;margin: 15px;margin-left: 30px;" onclick="startClick()">시작</button><button class="btn btn-primary" type="button" style="width: 100px;height: 40px;margin: 15px;" onclick="updateClick()">강제업뎃</button><button class="btn btn-primary" type="button" style="width: 100px;height: 40px;margin: 15px;" onclick="removeClick()">삭제</button><button class="btn btn-primary" type="button" style="width: 100px;height: 40px;margin: 15px;" onclikc="folderClick()">폴더열기</button></div>
+        <div id="patch-status-wrapper" class="patch-status-wrapper-hidden">
+            <p id="patch-title-p" style="color: white;">파일 패치 중</p>
+            <p id="patch-filename-p" style="color: white;">bigmodfile.jar</p>
+            <div class="progress" id="patch-progress" style="width: 100%;height: 20px;">
+                <div class="progress-bar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" id="patch-progress-bar" style="width: 50%;">50%</div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/profile.js"></script>
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/modpackpage.js"></script>
+</body>
+
+</html>
